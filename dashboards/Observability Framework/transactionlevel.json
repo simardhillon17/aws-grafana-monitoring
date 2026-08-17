@@ -1,0 +1,900 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 274,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 14,
+        "panels": [],
+        "title": "Errors",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "grafana-opensearch-datasource",
+          "uid": "eVufkd3Vz"
+        },
+        "description": "Datasource: OpenSearch; index: authgateway*\n\nCondition: source.responseCode \n\nDescription: This line graph panel highlights various status codes for all the requested URI, if there is an increase in any of specific code, please take a look at the other panels in this dashboards - \"trackingNumber failed at application\", \"trackingNumber failure message\", \"requestedURI failed at application\" to draw some analysis from these dashboards.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 10,
+          "w": 14,
+          "x": 0,
+          "y": 1
+        },
+        "id": 16,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "9.3.6",
+        "targets": [
+          {
+            "alias": "",
+            "bucketAggs": [
+              {
+                "field": "source.responseCode",
+                "id": "3",
+                "settings": {
+                  "min_doc_count": "0",
+                  "order": "desc",
+                  "orderBy": "_term",
+                  "size": "10"
+                },
+                "type": "terms"
+              },
+              {
+                "id": "4",
+                "settings": {
+                  "filters": [
+                    {
+                      "label": " ",
+                      "query": "!200"
+                    }
+                  ]
+                },
+                "type": "filters"
+              },
+              {
+                "field": "event.dateTime",
+                "id": "2",
+                "settings": {
+                  "interval": "auto"
+                },
+                "type": "date_histogram"
+              }
+            ],
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "eVufkd3Vz"
+            },
+            "format": "table",
+            "metrics": [
+              {
+                "id": "1",
+                "type": "count"
+              }
+            ],
+            "query": "NOT source.responseCode:\"200\"",
+            "queryType": "lucene",
+            "refId": "A",
+            "timeField": "event.dateTime"
+          }
+        ],
+        "title": "error over time",
+        "transformations": [
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "include": {
+                "names": [
+                  "Time",
+                  "404",
+                  "400"
+                ]
+              }
+            }
+          }
+        ],
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "grafana-opensearch-datasource",
+          "uid": "eVufkd3Vz"
+        },
+        "description": "Datasource: OpenSearch; index: authgateway*\n\nCondition: source.measurements.traceId:\"$trackingNumber\" AND NOT source.responseCode:200\n\nInput: trackingNumber\n\nDescription: If you receive a trackingNumber from a report, you can see from which system the failure happened based on the provided trackinNumber, that will help investigating that specific application for detailed analysis, such as resource consumption, connectivities etc.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto",
+              "filterable": true,
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Count"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "from": 1,
+                        "result": {
+                          "color": "dark-red",
+                          "index": 0,
+                          "text": "Failed here"
+                        },
+                        "to": 100
+                      },
+                      "type": "range"
+                    }
+                  ]
+                },
+                {
+                  "id": "custom.hidden",
+                  "value": true
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 7,
+          "x": 14,
+          "y": 1
+        },
+        "id": 24,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "Count"
+            }
+          ]
+        },
+        "pluginVersion": "9.3.6",
+        "targets": [
+          {
+            "alias": "",
+            "bucketAggs": [
+              {
+                "field": "event.application.keyword",
+                "id": "2",
+                "settings": {
+                  "min_doc_count": "0",
+                  "order": "desc",
+                  "orderBy": "_term",
+                  "size": "10"
+                },
+                "type": "terms"
+              }
+            ],
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "eVufkd3Vz"
+            },
+            "format": "table",
+            "metrics": [
+              {
+                "hide": true,
+                "id": "1",
+                "type": "count"
+              }
+            ],
+            "query": "source.measurements.traceId:\"$trackingNumber\" AND NOT source.responseCode:200",
+            "queryType": "lucene",
+            "refId": "A",
+            "timeField": "event.dateTime"
+          }
+        ],
+        "title": "trackingNumber failed at application",
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "grafana-opensearch-datasource",
+          "uid": "eVufkd3Vz"
+        },
+        "description": "Datasource: OpenSearch; index: authgateway*\n\nCondition: source.measurements.traceId:\"$trackingNumber\" AND NOT source.responseCode:200\n\nInput: trackingNumber\n\nDescription: If you receive a trackingNumber from a report, you can see exception for provided trackingNumber, that will help to identify the cause of the issue based on the message.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto",
+              "filterable": true,
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Count"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "from": 1,
+                        "result": {
+                          "color": "dark-red",
+                          "index": 0,
+                          "text": "Failed here"
+                        },
+                        "to": 100
+                      },
+                      "type": "range"
+                    }
+                  ]
+                },
+                {
+                  "id": "custom.hidden",
+                  "value": true
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 7,
+          "x": 14,
+          "y": 5
+        },
+        "id": 28,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": []
+        },
+        "pluginVersion": "9.3.6",
+        "targets": [
+          {
+            "alias": "",
+            "bucketAggs": [
+              {
+                "field": "event.data.errorDescription.keyword",
+                "id": "2",
+                "settings": {
+                  "min_doc_count": "0",
+                  "order": "desc",
+                  "orderBy": "_term",
+                  "size": "10"
+                },
+                "type": "terms"
+              }
+            ],
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "eVufkd3Vz"
+            },
+            "format": "table",
+            "metrics": [
+              {
+                "id": "1",
+                "type": "count"
+              }
+            ],
+            "query": "source.measurements.traceId:\"$trackingNumber\"",
+            "queryType": "lucene",
+            "refId": "A",
+            "timeField": "event.dateTime"
+          }
+        ],
+        "title": "trackingNumber failure message",
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "grafana-opensearch-datasource",
+          "uid": "eVufkd3Vz"
+        },
+        "description": "Datasource: OpenSearch; index: authgateway*\n\nCondition: source.requestedURI:$requestedURI AND NOT source.responseCode:\"200\"\n\nInput: trackingNumber\n\nDescription: If you receive a requestedURI from a report, you can see from which system the failure is originated, that will help investigating that specific application for detailed analysis, such as resource consumption, connectivities etc.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto",
+              "filterable": true,
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Count"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "from": 1,
+                        "result": {
+                          "index": 0,
+                          "text": "Failed"
+                        },
+                        "to": 100000
+                      },
+                      "type": "range"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 7,
+          "x": 14,
+          "y": 8
+        },
+        "id": 26,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "Count"
+            }
+          ]
+        },
+        "pluginVersion": "9.3.6",
+        "targets": [
+          {
+            "alias": "",
+            "bucketAggs": [
+              {
+                "field": "event.application.keyword",
+                "id": "2",
+                "settings": {
+                  "min_doc_count": "0",
+                  "order": "desc",
+                  "orderBy": "_term",
+                  "size": "10"
+                },
+                "type": "terms"
+              }
+            ],
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "eVufkd3Vz"
+            },
+            "format": "table",
+            "metrics": [
+              {
+                "hide": true,
+                "id": "1",
+                "type": "count"
+              }
+            ],
+            "query": "source.requestedURI:$requestedURI AND NOT source.responseCode:\"200\"",
+            "queryType": "lucene",
+            "refId": "A",
+            "timeField": "event.dateTime"
+          }
+        ],
+        "title": "requestedURI failed at application",
+        "type": "table"
+      },
+      {
+        "collapsed": true,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 11
+        },
+        "id": 10,
+        "panels": [
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "eVufkd3Vz"
+            },
+            "description": "Datasource: elasticSearch; index: authgateway*\n\nCondition: source.requestedURI:\"$requestedURI\"\n\nInput: requestedURI\n\nDescription: If you want to analyze a specific requestedURI failure, this panel shows the trend over time (based on the time range provided at top right corner of this dashboard) this will let you estimate the impact of the failures by studying how long the requestedURI has been failing.",
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": true,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 9,
+              "w": 10,
+              "x": 0,
+              "y": 2
+            },
+            "id": 6,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "pluginVersion": "9.4.7",
+            "targets": [
+              {
+                "alias": "",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "2",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "eVufkd3Vz"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "field": "source.measurements.timeTaken",
+                    "id": "1",
+                    "type": "avg"
+                  }
+                ],
+                "query": "source.requestedURI:\"$requestedURI\"",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "Latency  for requestedURI",
+            "transparent": true,
+            "type": "timeseries"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "eVufkd3Vz"
+            },
+            "description": "Datasource: elasticSearch; index: authgateway*\n\nCondition: source.requestedURI:\"$requestedURI\"\n\nInput: requestedURI\n\nDescription: This panel shows the average response time for all the available requestedURIs' based on the selected time range from the dashboard.",
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "fillOpacity": 80,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineWidth": 1,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 9,
+              "w": 10,
+              "x": 10,
+              "y": 2
+            },
+            "id": 12,
+            "options": {
+              "barRadius": 0,
+              "barWidth": 0.97,
+              "groupWidth": 0.7,
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "orientation": "auto",
+              "showValue": "auto",
+              "stacking": "none",
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              },
+              "xTickLabelRotation": 0,
+              "xTickLabelSpacing": 0
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "",
+                "bucketAggs": [
+                  {
+                    "field": "source.requestedURI.keyword",
+                    "id": "2",
+                    "settings": {
+                      "min_doc_count": "0",
+                      "order": "desc",
+                      "orderBy": "_term",
+                      "size": "10"
+                    },
+                    "type": "terms"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "eVufkd3Vz"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "field": "source.measurements.timeTaken",
+                    "id": "1",
+                    "type": "avg"
+                  }
+                ],
+                "query": "source.requestedURI:\"$requestedURI\"",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "Avg. Response time by URI for selected trackingNumber",
+            "transparent": true,
+            "type": "barchart"
+          }
+        ],
+        "title": "Latency",
+        "type": "row"
+      },
+      {
+        "collapsed": true,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 12
+        },
+        "id": 4,
+        "panels": [
+          {
+            "datasource": {
+              "type": "testdata",
+              "uid": "4lL2pBs4z"
+            },
+            "gridPos": {
+              "h": 21,
+              "w": 24,
+              "x": 0,
+              "y": 3
+            },
+            "id": 20,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "testdata",
+                  "uid": "4lL2pBs4z"
+                },
+                "refId": "A",
+                "scenarioId": "node_graph"
+              }
+            ],
+            "title": "Node telemetry.",
+            "type": "nodeGraph"
+          }
+        ],
+        "title": "Transaction Level Trace",
+        "type": "row"
+      }
+    ],
+    "refresh": false,
+    "revision": 1,
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "9c3faf2a-2cdb-461d-958d-03826fdcb7e5",
+            "value": "9c3faf2a-2cdb-461d-958d-03826fdcb7e5"
+          },
+          "description": "place the trackingNumber",
+          "hide": 0,
+          "includeAll": false,
+          "label": "trackingNumber",
+          "multi": false,
+          "name": "trackingNumber",
+          "options": [],
+          "query": "",
+          "queryValue": "",
+          "skipUrlSync": false,
+          "type": "custom"
+        },
+        {
+          "current": {
+            "selected": true,
+            "text": [
+              "/platform/gateway/message"
+            ],
+            "value": [
+              "/platform/gateway/message"
+            ]
+          },
+          "datasource": {
+            "type": "grafana-opensearch-datasource",
+            "uid": "eVufkd3Vz"
+          },
+          "definition": "{\"find\": \"terms\", \"field\": \"source.requestedURI.keyword\"}",
+          "hide": 0,
+          "includeAll": false,
+          "label": "requestedURI",
+          "multi": true,
+          "name": "requestedURI",
+          "options": [],
+          "query": "{\"find\": \"terms\", \"field\": \"source.requestedURI.keyword\"}",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        }
+      ]
+    },
+    "time": {
+      "from": "2023-07-01T04:00:00.000Z",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Transaction Level Drilldown Dashboard",
+    "uid": "iQjqMygSz",
+    "version": 13,
+    "weekStart": ""
+  }

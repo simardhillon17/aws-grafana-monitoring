@@ -1,0 +1,699 @@
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:   
+    - Label:
+        default: "Grafana IRSA Terraform AWS Resource Details"
+      Parameters:
+        - RolePurpose 
+        - LogLevel
+    - Label:
+          default: IRSA Role Enablement
+      Parameters:
+        - IRSARoleEnable
+        - IRSARoleArn        
+        - JenkinsRefresh 
+    - Label:
+        default: "Grafana Product Application/Helm Chart Deployment Details"
+      Parameters:
+        - ProductName
+        - ProjectName
+        - ClusterName
+        - ClusterType
+        - Namespace
+        - GrafanaSecrets
+        - OperatorSecrets
+        - KeycloakURL
+        - DNSDomainName
+        - BusinessUnit 
+        - IngressClass
+        
+    - Label:
+        default: "Grafana Product Advanced Configs"
+      Parameters: 
+        - ChartVersion 
+        - OBFChartVersion  
+        - OperatorImageVersion
+        - GrafanaImageVersion   
+        - GrafanaOperatorLoglevel
+        - DeployOBFDashboards
+        - DeployNFRDashboards
+    - Label:
+        default: "Grafana AWS Resource Tags"
+      Parameters:
+        - Lifecycle
+        - Tier
+        - DataClassification
+        - CostCenter
+        - ServiceId
+        - EolDate
+        - Department
+        - Group
+        - TechContact
+        - Description      
+    - Label:
+        default: "Resource limits and requests"
+      Parameters:
+        - GrafanaTshirtSize
+        - GrafanaOperatorTshirtSize
+        - GrafanaLimitsCpu
+        - GrafanaLimitsMemory
+        - GrafanaRequestsCpu
+        - GrafanaRequestsMemory
+        - GrafanaOperatorLimitsCpu
+        - GrafanaOperatorLimitsMemory
+        - GrafanaOperatorRequestsCpu
+        - GrafanaOperatorRequestsMemory
+Parameters:
+  IRSARoleEnable:
+    Type: String
+    Default: 'false'
+    Description: IRSA Role Enable or not
+    AllowedValues:
+      - 'false'
+      - 'true'
+  IRSARoleArn:
+    Default: ''
+    Description: IRSA Role Arn from IRSA Pipeline
+    Type: String
+  LogLevel:
+    Type: String
+    Description: Terraform log level.
+    Default: INFO
+    AllowedValues:
+      - TRACE
+      - DEBUG
+      - INFO
+      - WARN
+      - ERROR    
+  RolePurpose:
+    Type: String
+    Default: cwaccess
+    AllowedValues:
+      - cwaccess
+    Description: Purpose of role
+  Namespace:
+    Type: String
+    Description: K8s namespace
+    Default: monitoring
+    AllowedValues:
+      - monitoring
+  ProjectName:
+    Type: String
+    Description: Project name in ArgoCD   
+  ClusterName:
+    Type: String
+    Description: Name of the EKS cluster
+  ProductName:
+    Type: String
+    Default: grafana
+    AllowedValues:
+      - grafana
+    Description: Unique identifying name for product
+  IngressClass:
+    Type: String
+    Description: Which Nginx class to target.
+    Default: nginx-ssl-passthrough
+    AllowedValues:
+      - nginx-ssl-passthrough
+      - nginx-ingress-controller-ssl-passthrough
+      - sc-nginx-sslpass    
+  BusinessUnit:
+    Type: String
+    Description: Platform/EXAMPLE Business Unit for this deployment    
+  ChartVersion:
+    Type: String
+    Description: The version of the Chart being used for deployment.
+    Default: 3.5.7-2
+    AllowedValues:
+      - 2.7.16-1
+      - 3.5.7-2
+  OBFChartVersion:
+    Type: String
+    Description: The version of the Observability Framework Helm Chart being used for deployment. This version can be obtained from Harbor (Path => Harbor -> projects -> awsdevops -> helm-charts -> grafana-dashboards -> versions). 
+  DeployOBFDashboards:
+    Type: String
+    Default: 'false'
+    Description: Set this flag as true to deploy the Observability Framework dashboards.
+    AllowedValues:
+      - 'false'
+      - 'true'
+  DeployNFRDashboards:
+    Type: String
+    Default: 'false'
+    Description: Set this flag as true to deploy the NFR Testing Framework dashboards.
+    AllowedValues:
+      - 'false'
+      - 'true'
+  OperatorImageVersion:
+    Type: String
+    Description: The version of the Docker image being used for deployment.
+    Default: 5.5.0-debian-11-r0-platform
+    AllowedValues:
+      - 4.8.0-debian-11-r21-platform
+      - 5.5.0-debian-11-r0-platform
+  GrafanaImageVersion:
+    Type: String
+    Description: The version of the Docker image being used for deployment.
+    Default: 10.2.2-debian-11-r1-platform
+    AllowedValues:
+      - 9.3.6-debian-11-r0-2-platform
+      - 10.2.2-debian-11-r1-platform
+  GrafanaSecrets:
+    Type: String
+    Description: >-
+      Comma delimited list of Vault secrets to load into a Grafana
+      instance.(Postgres, Grafana Admin, Keycloak)
+    Default: >-
+      secret/aws/example-synthetic/us-east-1/grafana/credentials,secret/aws/example-synthetic/us-east-1/grafana/keycloak-info,secret/aws/example-synthetic/us-east-1/postgres/sysdb/your-db-host
+  OperatorSecrets:
+    Type: String
+    Description: >-
+      Comma delimited list of Vault secrets to load into the operator instance.
+      (Grafana Admin)
+    Default: secret/aws/example-synthetic/us-east-1/grafana/credentials
+  KeycloakURL:
+    Type: String
+    Description: Base URL For Keycloak
+    Default: 'https://auth.git.example.com/auth/realms/didev/protocol/openid-connect'
+  ClusterType:
+    Type: String
+    Description: Type of Kubernetes cluster that this product will be deployed onto
+    AllowedValues:
+    - eks
+    - kops
+    Default: eks
+  DNSDomainName:
+    Type: String
+    Description: The DNS Domain Name to be used for product URLs
+    Default: dev.example.aws
+  GrafanaOperatorLoglevel:  
+    Type: String
+    Description: Grafana-operator Log level
+    Default: error
+    AllowedValues:
+      - info
+      - debug
+      - error
+  JenkinsRefresh:
+    Type: String
+    Description: >
+      Unique parameter used to trigger a TerraformResource (IRSA pipeline) refresh. Generally entering the result of running the Linux bash command date +'%s' is
+      sufficient to cause the pipeline to run. Triggering the pipeline to refresh is necessary when the
+      pipeline script or Terraform code which doesn't have the relevant parameter exposed in SC has been changed. On the first provisioning of a product
+      the default value is sufficient.
+    Default: "0000000000"
+  Lifecycle:
+    Type: String
+    AllowedPattern : ".+"
+    Description: "Product Lifecycle example prod-cde, cert-cde,prod-ncde,cert-ncde, qa, dev, lab"
+  Tier:
+    Type: String
+    AllowedPattern : ".+"
+    Description: "Product tier example tier-web, tier-app, tier-data, gcp-bigquery, azure-sql, azure-redis, azure-documentdb, gcp_appengine_std, gcp_appengine_flex, etc"
+  DataClassification:
+    Type: String
+    AllowedPattern : ".+"
+    Description: "DataClassification (Used for tags)"
+  CostCenter:
+    Type: String
+    AllowedPattern : ".+"
+    Description: "Cost center that will be billed for its use example 4024, 4041, 4046, 4048, etc."
+  ServiceId:
+    Type: String
+    AllowedPattern : ".+"
+    Description: ServiceId details of product
+  EolDate:
+    Type: String
+    AllowedPattern : ".+"
+    Description: "EOL for products, mainly for non AWS devops products"
+  Department:
+    Type: String
+    AllowedPattern : ".+"
+    Description: Platform department details of product
+  Group:
+    Type: String
+    AllowedPattern : ".+"
+    Description: Group details of product
+  TechContact:
+    Type: String
+    AllowedPattern : ".+"
+    Description: TechContact details of product
+  Description:
+    Type: String
+    AllowedPattern : ".+"
+    Description: Description details of product    
+  GrafanaTshirtSize:  
+    Type: String
+    Description: Tshirt size for requests and limits
+    Default: "small"
+    AllowedValues:
+      - "small"
+      - "medium" 
+      - "large" 
+      - "custom" 
+  GrafanaLimitsCpu:
+    Type: String
+    Default: "300m"
+    Description: Grafana Custom CPU Limit Allocation
+  GrafanaLimitsMemory:
+    Type: String
+    Default: "1G"
+    Description: Grafana Custom Memory Limit Allocation
+  GrafanaRequestsCpu:
+    Type: String
+    Default: "100m"
+    Description: Grafana Custom CPU Request Allocation
+  GrafanaRequestsMemory:
+    Type: String
+    Default: "250Mi"
+    Description: Grafana Custom Memory Request Allocation  
+  GrafanaOperatorTshirtSize:  
+    Type: String
+    Description: Tshirt size for requests and limits
+    Default: "small"
+    AllowedValues:
+      - "small"
+      - "medium" 
+      - "large" 
+      - "custom" 
+  GrafanaOperatorLimitsCpu:
+    Type: String
+    Default: "300m"
+    Description: Grafana Custom CPU Limit Allocation
+  GrafanaOperatorLimitsMemory:
+    Type: String
+    Default: "1G"
+    Description: Grafana Custom Memory Limit Allocation
+  GrafanaOperatorRequestsCpu:
+    Type: String
+    Default: "100m"
+    Description: Grafana Custom CPU Request Allocation
+  GrafanaOperatorRequestsMemory:
+    Type: String
+    Default: "250Mi"
+    Description: Grafana Custom Memory Request Allocation    
+Conditions:
+  UseNamespace: !Not [!Equals [!Ref Namespace, ""]]
+  UseGrafanacustom: !Equals [!Ref GrafanaTshirtSize, "custom"]
+  UseGrafanaOperatorcustom: !Equals [!Ref GrafanaOperatorTshirtSize, "custom"]
+Mappings: 
+  GrafanaTshirtSize:
+    small:
+      limitsmemory: "1G"
+      requestsmemory: "250Mi"
+      limitscpu: "1000m"
+      requestscpu: "200m"
+    medium:  
+      limitsmemory: "1G"
+      requestsmemory: "550Mi"
+      limitscpu: "1000m"
+      requestscpu: "400m"
+    large:
+      limitsmemory: "1G"
+      requestsmemory: "750Mi"
+      limitscpu: "1000m"
+      requestscpu: "700m"
+    custom:
+      limitsmemory: ""
+      requestsmemory: ""
+      limitscpu: ""
+      requestscpu: ""  
+  GrafanaOperatorTshirtSize:
+    small:
+      limitsmemory: "1G"
+      requestsmemory: "150Mi"
+      limitscpu: "300m"
+      requestscpu: "50m"
+    medium:  
+      limitsmemory: "1G"
+      requestsmemory: "250Mi"
+      limitscpu: "300m"
+      requestscpu: "75m"
+    large:
+      limitsmemory: "1G"
+      requestsmemory: "350Mi"
+      limitscpu: "300m"
+      requestscpu: "100m"
+    custom:
+      limitsmemory: ""
+      requestsmemory: ""
+      limitscpu: ""
+      requestscpu: ""          
+  
+Resources: 
+  TerraformResource:
+    Type: 'Custom::TerraformPipeline'
+    Version: 1
+    Properties:
+      ServiceToken: "{{resolve:ssm:/application/tools/jenkins_broker_sns}}"
+      JenkinsJobName: "SC-IRSA-IAM-PIPELINE"
+      prov_prod_name: !Ref AWS::StackName
+      productProject: cdm
+      productRepo: aws-grafana-observability
+      productPath: "src/terraform"
+      logLevel: !Ref LogLevel
+      account_name: "{{resolve:ssm:/application/current_account_name_alias}}"
+      Refresh: !Ref JenkinsRefresh
+      tf_vars:
+        cluster_name: !Ref ClusterName
+        product_name: !Ref ProductName
+        purpose: !Ref RolePurpose
+        business_unit: !Ref BusinessUnit
+        oidc_fully_qualified_subjects: !Sub 'system:serviceaccount:${Namespace}:${ClusterName}-${ProductName}-grafana-operator,system:serviceaccount:${Namespace}:${ClusterName}-${ProductName}-grafana-operator-grafana-sa'
+        region: !Ref AWS::Region
+        endpoint: !Sub grafana-${BusinessUnit}.${DNSDomainName}
+        lifecycle: !Ref Lifecycle
+        tier: !Ref Tier
+        dataClassification: !Ref DataClassification
+        costcenter: !Ref CostCenter
+        service_id: !Ref ServiceId
+        eol_date: !Ref EolDate
+        department: !Ref Department
+        group: !Ref Group
+        tech_contact: !Ref TechContact
+        description: !Ref Description
+
+  # # Create the Vault access service account for 'grafana-grafana-operator'
+  NamespaceCustomResourceGrafanaOperator:
+    Type: 'Custom::NamespacePipeline'
+    Version: 1
+    DependsOn: "TerraformResource"
+    Properties:
+      ServiceToken: "{{resolve:ssm:/application/tools/jenkins_broker_sns}}"
+      JenkinsJobName: SC-Namespace-Product-Pipeline
+      prov_prod_name: !Ref AWS::StackName
+      ns_vars:
+        CLUSTER: !Ref ClusterName
+        NAMESPACE: !Ref Namespace
+        account_name: '{{resolve:ssm:/application/current_account_name_alias}}'
+        Service_Account: !Sub ${ClusterName}-${ProductName}-grafana-operator
+        ResourceQuota: large
+        RepoDir: ""
+        HelmValuesJson: ""
+        EnableResourceQuota: "false"
+        IRSARole: !Ref IRSARoleEnable
+        RoleArn: !Ref IRSARoleArn
+
+  # Create the Vault access service account for 'grafana-serviceaccount'
+  NamespaceCustomResourceGrafanaServiceAccount:
+    Type: 'Custom::NamespacePipeline'
+    Version: 1
+    DependsOn: "NamespaceCustomResourceGrafanaOperator"
+    Properties:
+      ServiceToken: "{{resolve:ssm:/application/tools/jenkins_broker_sns}}"
+      JenkinsJobName: SC-Namespace-Product-Pipeline
+      prov_prod_name: !Ref AWS::StackName
+      ns_vars:
+        CLUSTER: !Ref ClusterName
+        NAMESPACE: !Ref Namespace
+        account_name: '{{resolve:ssm:/application/current_account_name_alias}}'
+        Service_Account: !Sub ${ClusterName}-${ProductName}-grafana-operator-grafana-sa
+        ResourceQuota: large
+        RepoDir: ""
+        HelmValuesJson: ""
+        EnableResourceQuota: "false"
+        IRSARole: !Ref IRSARoleEnable
+        RoleArn: !Ref IRSARoleArn
+        LimitMinMemory: "128Mi"
+
+  JenkinsResource:
+    Type: 'Custom::ProductPipeline'
+    Version: 1
+    DependsOn: "NamespaceCustomResourceGrafanaServiceAccount"
+    Properties:
+      ServiceToken: "{{resolve:ssm:/application/tools/jenkins_broker_sns}}"
+      JenkinsJobName: SC-Grafana-Product-Pipeline
+      StackName: !Ref AWS::StackName
+      AccountName: "{{resolve:ssm:/application/current_account_name_alias}}"
+      ClusterType: !Ref ClusterType
+      Namespace: !Ref Namespace
+      ClusterName: !Ref ClusterName
+      DNSDomainName: !Ref DNSDomainName
+  ArgoCustomResource:
+    Type: 'Custom::ArgoCD'
+    Version: 1
+    DependsOn: "JenkinsResource"
+    Properties:
+      ServiceToken: "{{resolve:ssm:/application/tools/argocd_broker_sns}}"
+      GitBranch: development
+      ApplicationName: !Sub '${ClusterName}-${ProductName}'
+      ApplicationVersion: 4.6.0
+      ProjectName: !Ref ProjectName
+      Namespace: !Ref Namespace
+      ClusterName: !Ref ClusterName
+      HelmDependencies:
+        - name: grafana-operator
+          version: !Ref ChartVersion
+          repository: "{{resolve:ssm:/application/tools/oci_harbor_docker_url}}/awsdevops"
+        - name: grafana-dashboards
+          version: !Ref OBFChartVersion
+          repository: "{{resolve:ssm:/application/tools/oci_harbor_docker_url}}/awsdevops"
+      HelmValues:
+        grafana-dashboards:
+          include_standard_dashboards: !Ref DeployOBFDashboards
+          include_nfr_test_framework_dashboards: !Ref DeployNFRDashboards
+        grafana-operator:
+          podDisruptionBudget:
+            minAvailable: "50%"
+          operator:
+            serviceAccount:
+              annotations:
+                eks.amazonaws.com/role-arn: !Sub >-
+                  arn:aws:iam::${AWS::AccountId}:role/${ProductName}-${BusinessUnit}-${ClusterName}-${RolePurpose}
+                eks.amazonaws.com/sts-regional-endpoints: 'true'
+            podAnnotations:
+              com.example.init.vault-secret/inject: enabled
+              com.example.init.vault.env/vault_addr: '{{ ssm "/application/tools/vault_url" }}'
+              com.example.init.vault.env/secret_path: !Ref OperatorSecrets
+            command:
+              - "/usr/sbin/load_secrets"
+              - "grafana-operator"
+            image:
+              registry: '{{ssm "/application/tools/harbor_docker_url" }}'
+              repository: awsdevops/grafana-operator
+              tag: !Ref OperatorImageVersion
+            zapLevel: !Ref GrafanaOperatorLoglevel 
+            resources: 
+              limits:
+                cpu: !If [UseGrafanacustom, !Ref GrafanaLimitsCpu, !FindInMap [GrafanaTshirtSize, !Ref GrafanaTshirtSize, limitscpu ]]
+                memory: !If [UseGrafanacustom, !Ref GrafanaLimitsMemory, !FindInMap [GrafanaTshirtSize, !Ref GrafanaTshirtSize, limitsmemory ]]  
+              requests:
+                cpu: !If [UseGrafanacustom, !Ref GrafanaRequestsCpu, !FindInMap [GrafanaTshirtSize, !Ref GrafanaTshirtSize, requestscpu ]]   
+                memory: !If [UseGrafanacustom, !Ref GrafanaRequestsMemory, !FindInMap [GrafanaTshirtSize, !Ref GrafanaTshirtSize, requestsmemory ]]  
+            scanAllNamespaces: true 
+            prometheus:
+              serviceMonitor:
+                enabled: true
+                jobLabel: app.kubernetes.io/grafana
+            extraVolumes:
+              - name: vault-secret
+                emptyDir: {}
+            extraVolumeMounts:
+              - name: vault-secret
+                mountPath: /var/secret
+                readOnly: false
+            nodeAffinityPreset:
+              type: "soft"
+              key: "PlatformControlPlaneAddons"
+              values:
+              - "Active"
+            tolerations:
+            - key: "PlatformControlPlaneAddons"
+              operator: "Exists"  
+            readinessProbe:
+              initialDelaySeconds: 60
+            livenessProbe:
+              initialDelaySeconds: 60
+            skipCreateAdminAccount: true
+          grafana:
+            readinessProbe:
+              initialDelaySeconds: 60
+            nodeAffinityPreset:
+              type: "soft"
+              key: "PlatformControlPlaneAddons"
+              values:
+              - Active
+            tolerations:
+            - key: "PlatformControlPlaneAddons"
+              operator: "Exists"  
+            deploymentAnnotations:
+              com.example.init.vault-secret/inject: enabled
+              com.example.init.vault.env/vault_addr: '{{ ssm "/application/tools/vault_url" }}'
+              com.example.init.vault.env/secret_path: !Ref GrafanaSecrets
+            replicaCount: 3
+            skipCreateAdminAccount: true
+            image:
+              registry: '{{ssm "/application/tools/harbor_docker_url" }}'
+              repository: awsdevops/grafana
+              tag: !Ref GrafanaImageVersion
+            resources:
+              limits:
+                cpu: !If [UseGrafanaOperatorcustom, !Ref GrafanaOperatorLimitsCpu, !FindInMap [GrafanaOperatorTshirtSize, !Ref GrafanaOperatorTshirtSize, limitscpu ]]
+                memory: !If [UseGrafanaOperatorcustom, !Ref GrafanaOperatorLimitsMemory, !FindInMap [GrafanaOperatorTshirtSize, !Ref GrafanaOperatorTshirtSize, limitsmemory ]]  
+              requests:
+                cpu: !If [UseGrafanaOperatorcustom, !Ref GrafanaOperatorRequestsCpu, !FindInMap [GrafanaOperatorTshirtSize, !Ref GrafanaOperatorTshirtSize, requestscpu ]]   
+                memory: !If [UseGrafanaOperatorcustom, !Ref GrafanaOperatorRequestsMemory, !FindInMap [GrafanaOperatorTshirtSize, !Ref GrafanaOperatorTshirtSize, requestsmemory ]]   
+            serviceAccount:
+              metadata:
+                annotations:
+                  eks.amazonaws.com/role-arn: !Sub >-
+                    arn:aws:iam::${AWS::AccountId}:role/${ProductName}-${BusinessUnit}-${ClusterName}-${RolePurpose}
+                  eks.amazonaws.com/sts-regional-endpoints: 'true'
+            config:
+              security:
+                disable_gravatar: '{{``}}false{{``}}'
+              database:
+                type: postgres
+                host: REPLACED_BY_VAULT_SECRET
+                name: REPLACED_BY_VAULT_SECRET
+                user: REPLACED_BY_VAULT_SECRET
+                password: REPLACED_BY_VAULT_SECRET
+                wal: '{{``}}false{{``}}'
+              auth:
+                disable_login_form: '{{``}}false{{``}}'
+                disable_signout_menu: '{{``}}false{{``}}'
+                oauth_allow_insecure_email_lookup: '{{``}}true{{``}}'
+              feature_toggles:
+                enable: cloudWatchCrossAccountQuerying  
+              auth.generic_oauth:
+                enabled: '{{``}}true{{``}}'
+                allow_sign_up: '{{``}}true{{``}}'
+                client_id: DUMMY
+                client_secret: DUMMY
+                tls_skip_verify_insecure: '{{``}}true{{``}}'
+                scopes: openid profile email groups
+                auth_url: !Sub '${KeycloakURL}/auth'
+                token_url: !Sub '${KeycloakURL}/token'
+                api_url: !Sub '${KeycloakURL}/userinfo'
+                role_attribute_path: >-
+                  contains(groups[*], '/Core Engineering - Devops') && 'Admin'
+                  || contains(groups[*],
+                  '/CLD-DEVSYNTHETICDEVOPSTOOLING-Consultant-DevOps-Engineer')
+                  && 'Admin' || contains(groups[*], '/grafana-admin') && 'Admin'
+                  || contains(groups[*], 'EDITOR') && 'Editor' ||
+                  contains(groups[*], '/grafana-editor') && 'Editor' || 'Viewer'
+            ingress:
+              enabled: true
+              host: !Sub grafana-${BusinessUnit}.${DNSDomainName}
+              path: /
+              targetPort: 3000
+              ingressClassName: !Ref IngressClass
+              tls: true
+              tlsSecret: grafana-tls-secret
+            dashboardLabelSelectors:
+              - matchExpressions:
+                  - key: app
+                    operator: Exists
+            extraVolumes:
+              - name: vault-secret
+                emptyDir: {}
+            extraVolumeMounts:
+              - name: vault-secret
+                mountPath: /var/secret
+                readOnly: false      
+          prometheusRule:
+            enabled: true
+            additionalLabels:
+              app: grafana
+            namespace: !Ref Namespace
+            interval: 30s  
+            rules:
+            - alert: GrafanaNotReady
+              expr: kube_pod_container_status_ready{container="grafana"} == 0
+              labels:
+                appname: grafana
+                department: awsdevops
+                severity: critical
+                iscontrolplane: '{{``}}true{{``}}'
+              annotations:
+                summary: "Grafana in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has failed pods {{`{{`}} $labels.name {{`}}`}}"
+                description: "Grafana in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has failed pods {{`{{`}} $labels.name {{`}}`}}"
+            - alert: GrafanaOperatorNotReady
+              expr: kube_pod_container_status_ready{container="grafana-operator"} == 0
+              for: 3m
+              labels:
+                appname: grafana
+                department: awsdevops
+                severity: critical
+                iscontrolplane: '{{``}}true{{``}}'
+              annotations:
+                summary: "Grafana-operator in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has failed pods {{`{{`}} $labels.name {{`}}`}}"
+                description: "Grafana-operator in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has failed pods {{`{{`}} $labels.name {{`}}`}}"
+            - alert: GrafanaOperatorReconcileErrors
+              expr: increase(controller_runtime_reconcile_errors_total{container="grafana-operator"}[10m]) > 1
+              for: 3m
+              labels:
+                appname: grafana
+                department: awsdevops
+                severity: warning
+                iscontrolplane: '{{``}}true{{``}}'
+              annotations:
+                summary: "Grafana-operator in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has Reconcile error {{`{{`}} $labels.name {{`}}`}}"
+                description: "Grafana-operator in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has Reconcile error {{`{{`}} $labels.name {{`}}`}}"
+            - alert: GrafanaOperatorCertificateReadErrors
+              expr: increase(certwatcher_read_certificate_errors_total{container="grafana-operator"}[10m]) > 1
+              for: 3m
+              labels:
+                appname: grafana
+                department: awsdevops
+                severity: warning
+                iscontrolplane: '{{``}}true{{``}}'
+              annotations:
+                summary: "Grafana-operator in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has Certificate read error {{`{{`}} $labels.name {{`}}`}}"
+                description: "Grafana-operator in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has Certificate read error {{`{{`}} $labels.name {{`}}`}}"
+            - alert: AllGrafanaNotReady
+              expr: count(kube_pod_container_status_ready{container="grafana"} == 1) == 0
+              for: 3m
+              labels:
+                appname: grafana
+                department: awsdevops
+                severity: critical
+                iscontrolplane: '{{``}}true{{``}}'
+              annotations:
+                summary: "Grafana in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} all grafana pods are not ready {{`{{`}} $labels.name {{`}}`}}"
+                description: "Grafana in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} all grafana pods are not ready {{`{{`}} $labels.name {{`}}`}}"
+            - alert: Grafana400Errors
+              expr: increase(grafana_page_response_status_total{job="grafana-service",code=~"4.*"}[5m]) > 1
+              for: 3m
+              labels:
+                appname: grafana
+                department: awsdevops
+                severity: warning
+                iscontrolplane: '{{``}}true{{``}}'
+              annotations:
+                summary: "Grafana in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has 400 series error {{`{{`}} $labels.name {{`}}`}}"
+                description: "Grafana in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has 400 series error {{`{{`}} $labels.name {{`}}`}}"
+            - alert: Grafana500Errors
+              expr: increase(grafana_page_response_status_total{job="grafana-service",code=~"5.*"}[5m]) > 1
+              for: 3m
+              labels:
+                appname: grafana
+                department: awsdevops
+                severity: critical
+                iscontrolplane: '{{``}}true{{``}}'
+              annotations:
+                summary: "Grafana in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has 500 series error {{`{{`}} $labels.name {{`}}`}}"
+                description: "Grafana in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has 500 series error {{`{{`}} $labels.name {{`}}`}}"
+            - alert: GrafanaOperator400Errors
+              expr: increase(rest_client_requests_total{container="grafana-operator",code=~"4.*"}[10m]) > 1
+              for: 3m
+              labels:
+                appname: grafana
+                department: awsdevops
+                severity: warning
+                iscontrolplane: '{{``}}true{{``}}'
+              annotations:
+                summary: "Grafana Operator in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has 400 series error {{`{{`}} $labels.name {{`}}`}}"
+                description: "Grafana Operator in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has 400 series error {{`{{`}} $labels.name {{`}}`}}"
+            - alert: GrafanaOperator500Errors
+              expr: increase(rest_client_requests_total{container="grafana-operator",code=~"5.*"}[10m]) > 1
+              for: 3m
+              labels:
+                appname: grafana
+                department: awsdevops
+                severity: critical
+                iscontrolplane: '{{``}}true{{``}}'
+              annotations:
+                summary: "Grafana Operator in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has 500 series error {{`{{`}} $labels.name {{`}}`}}"
+                description: "Grafana Operator in cluster {{`{{`}} $externalLabels.cluster {{`}}`}} has 500 series error {{`{{`}} $labels.name {{`}}`}}"         

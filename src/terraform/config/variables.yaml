@@ -1,0 +1,19 @@
+  'region'              : 'us-east-1'
+  'cluster_name'        : 'cmon-adoption'
+  'product_name'         : 'grafana'
+  'oidc_fully_qualified_subjects' : 'system:serviceaccount:monitoring:grafana-grafana-operator'
+  'purpose'              : 'cw-access'
+  'endpoint'             : ''
+  'business_unit'        : 'issuing'
+
+  lifecycle: dev
+  tier: tier
+  dataClassification: dc2-p3-sx
+  costcenter: 4024
+  service_id: service_id
+  eol_date: NA
+  department: Issuing
+  group: platform
+  tech_contact: coreengineering-devops@example.com
+  description: grafana
+  

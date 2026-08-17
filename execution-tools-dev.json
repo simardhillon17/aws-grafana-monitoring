@@ -1,0 +1,30 @@
+{
+    "env_name": "dev",
+    "execution": {
+        "111122223333": {
+            "hub_account_name": "toolsexample-commons-hub",
+            "accounts": [
+                "111122223333"
+            ],
+            "organizations": [],
+            "organizational_units": [],
+            "regions": [ 
+                "us-west-2", 
+                "us-east-1",
+                "eu-central-1",
+                "ap-south-1"
+            ],
+            "tags": [],
+            "principals": [
+                {
+                    "account_id": "111122223333",
+                    "entity": "role/ISSUING-DevOps-Engineer"
+                },
+                {
+                    "account_id": "111122223333",
+                    "entity": "role/SRE-Engineer"
+                }
+            ]
+        }
+    }
+}

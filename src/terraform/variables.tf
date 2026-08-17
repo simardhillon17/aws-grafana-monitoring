@@ -1,0 +1,21 @@
+locals {
+  user_input           = yamldecode(file("./config/variables.yaml"))
+  region               = lookup(local.user_input, "region")
+  cluster_name         = lookup(local.user_input, "cluster_name")
+  product_name          = lookup(local.user_input, "product_name")
+  purpose              = lookup(local.user_input, "purpose")
+  oidc_fully_qualified_subjects= toset(split(",", lookup(local.user_input, "oidc_fully_qualified_subjects")))
+  endpoint             = lookup(local.user_input, "endpoint")
+  business_unit        = lookup(local.user_input, "business_unit")
+  lifecycle                       = lookup(local.user_input, "lifecycle", "dev")
+  tier                           = lookup(local.user_input, "tier", "tier")
+  dataClassification             = lookup(local.user_input, "dataClassification", "dc2-p3-sx")
+  costcenter                     = lookup(local.user_input, "costcenter", "4024")
+  service_id                     = lookup(local.user_input, "service_id", "service_id")
+  eol_date                       = lookup(local.user_input, "eol_date", "NA")
+  department                     = lookup(local.user_input, "department", "Issuing")
+  group                          = lookup(local.user_input, "group", "platform")
+  tech_contact                   = lookup(local.user_input, "tech_contact", "coreengineering-devops@example.com")
+  description                    = lookup(local.user_input, "description", "grafana")
+}
+

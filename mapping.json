@@ -1,0 +1,16 @@
+{
+    "mapping": {
+        "name": "aws-grafana-observability",
+        "description": "Portfolio of products in grafana Stack",
+        "owner": "coreengineering-devopsteam",
+        "products": [
+                {
+                "name": "aws-central-grafana",
+                "template": "grafana-custom-resource.yaml",
+                "owner": "coreengineering-devopsteam", 
+                "description": "This product uses grafana Helm chart to build and deploy grafana stack",
+                "launchrole": "Service-Catalog-Launch-Constraint"
+                }
+            ]
+        }
+}

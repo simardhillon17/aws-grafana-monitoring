@@ -1,0 +1,205 @@
+import groovy.json.JsonOutput
+// read the lambda broker event
+buildData = readJSON text: EVENT
+input = buildData.input
+
+def aws_region = input.region
+def account_name = input.AccountName
+def dns_domain = input.DNSDomainName
+
+def cluster_name = input.ClusterName
+
+def cluster_type = input.ClusterType ?: ""
+// Workaround inconsistency between cluster type and vault paths.
+if (cluster_type == "eks") {
+    cluster_type="eks_linux"
+}
+
+def namespace = input.Namespace ?: ""
+def cfn_stack_name = input.StackName
+
+def jenkins_credentials = 'jenkins'
+
+print "### Event DEBUG ###"
+print buildData;
+print "###################"
+
+def worker="${account_name}-${aws_region}"
+
+def env_vars = [
+    "AWS_STS_REGIONAL_ENDPOINTS=regional",
+]
+
+// SC Tools repo settings
+def tools_repo = GIT_FULL_URL + "/cdm/aws-sc-tools.git"
+def tools_branch = "v2.3" // can be a branch, commit, or tag
+
+def cfn_signal_success = "shell_run.py reply-success"
+def cfn_signal_failure = "shell_run.py reply-failed"
+
+def vault_url = VAULT_COMMON_NON_API_URL
+
+// Monitoring Stack TLS Secret Variables
+String grafana_tls_secret = 'grafana-tls-secret'
+List cert_secrets  = [grafana_tls_secret]
+
+// Specific variables to the Jenkins execution
+
+try {
+    node(worker) 
+    {
+
+        deleteDir()
+        cleanWs()
+
+        stage('Workspace Setup') {
+            print "Creating workspace: ${env.WORKSPACE}/${cfn_stack_name}"
+            sh "rm -rf ${env.WORKSPACE}/* || true"
+            sh "mkdir -p ${env.WORKSPACE}/${cfn_stack_name}"
+        }
+
+        // Pull the SC Tools source code
+        stage('SC Tools Checkout') {
+            dir("${env.WORKSPACE}/${cfn_stack_name}") {
+                checkout([$class: 'GitSCM',
+                        branches: [[name: tools_branch]],
+                        userRemoteConfigs: [[ credentialsId: jenkins_credentials, url: tools_repo ]],
+                        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'tools' ]]
+                ])
+            }
+        }
+        writeJSON file: 'event.json', json: buildData
+        stash name: 'workspace'
+        withCredentials([[$class: 'VaultTokenCredentialBinding', addrVariable: 'TF_VAR_VAULT_ADDR', credentialsId: "${account_name}_${input.region}_automation_approle", tokenVariable:'CLIENT_TOKEN', vaultAddr: VAULT_COMMON_NON_API_URL]]) 
+        {
+            unstash 'workspace'
+
+            def PROXY_URL = sh (returnStdout: true, script: "aws ssm get-parameter --name /examplefwk/init/squid_proxy_url --query '[Parameter.Value]' --output text  --with-decryption --region ${input.region}").trim()
+            def NO_PROXY = sh (returnStdout: true, script: "aws ssm get-parameter --name /application/tools/squid/no_proxy --query '[Parameter.Value]' --output text  --with-decryption --region ${input.region}").trim()
+            print "PROXY_URL: " + PROXY_URL
+            print "NO_PROXY_URL: " + NO_PROXY
+            // Proxy settings for the deployment
+            def proxy_settings = [
+                "HTTPS_PROXY=${PROXY_URL}",
+                "HTTP_PROXY=${PROXY_URL}",
+                "NO_PROXY=${NO_PROXY}"
+                ]
+
+            withEnv(env_vars + ["KUBECONFIG=${WORKSPACE}/.kube/config"]) {
+                stage('Setup KUBECONFIG'){
+                    sh """
+                            set +x
+                            echo "Retrieve token for Vault access and write to temp location"
+                            echo "Retrieve Kubeconfig and write to disk"
+                            KUBE_CONFIG=\$(curl -H "X-Vault-Token: \$CLIENT_TOKEN" -X GET ${vault_url}/v1/secret/aws/${account_name}/${aws_region}/${cluster_type}/${cluster_name}/kubeconfig | jq -r ".data")
+                            if [ ! -z "\$KUBE_CONFIG" -a "\$KUBE_CONFIG" != null ]; then
+                                [ -d ${WORKSPACE}/.kube ] || mkdir ${WORKSPACE}/.kube
+                            else
+                                echo "Please check the Kubeconfig in Vault"
+                                exit 1
+                            fi
+
+                            echo \$KUBE_CONFIG > ${WORKSPACE}/.kube/config
+                    """
+                }
+            }
+            stash 'workspace'
+    
+
+            if (input.RequestType == 'Create') 
+            {
+                        unstash 'workspace'
+
+                        withEnv(env_vars + ["KUBECONFIG=${WORKSPACE}/.kube/config"]) {
+                            for (int i = 0; i < cert_secrets.size(); i++) {
+                                stage('Create K8s TLS secret ' + cert_secrets[i]){
+                                    def i_prefix = cert_secrets[i].tokenize('-')[0]
+                                    sh """
+                                        set +x
+                                        if ! kubectl get secret ${cert_secrets[i]} -n ${namespace}; then
+                                            cert=\$( curl -H "X-Vault-Token: \$CLIENT_TOKEN" -X GET ${vault_url}/v1/secret/aws/${account_name}/${aws_region}/certificates/${dns_domain} )
+                                            echo "JQ workaround for inconsistent key names in Vault"
+                                            ( jq -er '.data | select(.certificate != null) | .certificate'  <<< "\${cert}" || jq -er '.data | select(.certificates != null) | .certificates'  <<< "\${cert}" ) > ${cert_secrets[i]}.cert.pem
+                                            jq -r '.data.key | select(. == null | not)'  <<< "\${cert}" > ${cert_secrets[i]}.key.pem
+
+                                            if [ ! -s "${cert_secrets[i]}.cert.pem" -o ! -s "${cert_secrets[i]}.key.pem" ]; then
+                                                echo "No CentralMonitoring cert/key content could be found."
+                                                exit 1
+                                            fi
+
+                                            kubectl create secret tls ${cert_secrets[i]} \
+                                            --key ${cert_secrets[i]}.key.pem \
+                                            --cert ${cert_secrets[i]}.cert.pem \
+                                            -n ${namespace} --dry-run=client -o yaml | kubectl apply --force -f - -n ${namespace}
+                                        else
+                                            echo "TLS cert ${cert_secrets[i]} already exists."
+                                        fi
+                                    """
+                                }
+                            }
+
+                        }
+                        stash name: 'workspace'
+            }
+
+
+            if (input.RequestType == 'Update') {
+                    stage('Updates'){
+                        sh """
+                        echo "Scaffolding for later stage"
+                    """
+                    }
+            }
+
+            if (input.RequestType == 'Delete') {
+                unstash 'workspace'
+
+                withEnv(env_vars + ["KUBECONFIG=${WORKSPACE}/.kube/config"]) {
+                    for (int i = 0; i < cert_secrets.size(); i++) {
+                        stage('Delete K8s TLS secret ' + cert_secrets[i]){
+                            def i_prefix = cert_secrets[i].tokenize('-')[0]
+                            sh """
+                                kubectl delete secret ${cert_secrets[i]} -n ${namespace} || true
+                            """
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+}
+catch(Exception ex) {
+    currentBuild.result = 'FAILURE'
+    print '#########################'
+    print 'Build failed with error: ' + ex.toString()
+    print '#########################'
+    node(worker) {
+        unstash 'workspace'
+        withEnv(env_vars + [
+            "PATH=$PATH:${env.WORKSPACE}/${cfn_stack_name}/tools"]) {
+            input.put('failureReason', 'Build failed with error: ' + ex.toString())
+            writeJSON file: 'event.json', json: buildData
+            sh 'echo ERROR'
+            sh cfn_signal_failure
+        }
+        stage ('Clean workspace') {
+            cleanWs()
+        }
+    }
+
+    throw ex
+}
+
+// If we got this far we're good.
+node(worker) {
+    unstash 'workspace'
+    withEnv(env_vars + [
+        "PATH=$PATH:${env.WORKSPACE}/${cfn_stack_name}/tools"]) {
+        sh 'echo FINI'
+        sh cfn_signal_success
+    }
+    stage ('Clean workspace') {
+        cleanWs()
+    }
+}

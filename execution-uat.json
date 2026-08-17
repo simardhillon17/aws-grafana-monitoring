@@ -1,0 +1,54 @@
+{
+    "execution": {
+        "111122223333": {
+            "hub_account_name": "toolsexample-iss-nas-hub",
+            "accounts": [
+                "111122223333",
+                "111122223333",
+                "111122223333",
+                "111122223333",
+                "111122223333",
+                "111122223333"
+             ],
+            "organizations": [],
+            "organizational_units": [],
+            "regions": [ 
+                "us-west-2", 
+                "us-east-1",
+                "eu-central-1",
+                "sa-east-1"
+            ],
+            "tags": [],
+            "principals": [
+                {
+                    "account_id": "111122223333",
+                    "entity": "role/ISSUING-DevOps-Engineer"
+                },
+                {
+                    "account_id": "111122223333",
+                    "entity": "role/ISSUING-DevOps-Engineer"
+                },
+                {
+                    "account_id": "111122223333",
+                    "entity": "role/ISSUING-DevOps-Engineer"
+                },
+                {
+                    "account_id": "111122223333",
+                    "entity": "role/ISSUING-DevOps-Engineer"
+                },
+                {
+                    "account_id": "111122223333",
+                    "entity": "role/ISSUING-DevOps-Engineer"
+                },
+                {
+                    "account_id": "111122223333",
+                    "entity": "role/DevOps-Engineer"
+                },
+                {
+                    "account_id": "111122223333",
+                    "entity": "role/ISSUING-DevOps-Engineer"
+                }
+            ]
+        }
+    }
+}

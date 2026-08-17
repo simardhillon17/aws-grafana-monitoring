@@ -1,0 +1,351 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Monitor Pod CPU and Memory usage",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "gnetId": 15055,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "0HyIE2DVz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "0HyIE2DVz"
+          },
+          "exemplar": true,
+          "expr": "rate(container_cpu_usage_seconds_total{pod=\"$pod\",container=\"$container\"}[5m])",
+          "interval": "",
+          "legendFormat": "container usage",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "0HyIE2DVz"
+          },
+          "exemplar": true,
+          "expr": "avg(kube_pod_container_resource_requests{pod=\"$pod\",container=\"$container\",resource=\"cpu\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "container request",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "0HyIE2DVz"
+          },
+          "exemplar": true,
+          "expr": "avg(kube_pod_container_resource_limits{pod=\"$pod\",container=\"$container\",resource=\"cpu\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "container limit",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "0HyIE2DVz"
+          },
+          "exemplar": true,
+          "expr": "rate(container_cpu_cfs_throttled_periods_total{pod=\"$pod\",container=\"$container\"}[5m])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "throttling",
+          "refId": "D"
+        }
+      ],
+      "title": "CPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "0HyIE2DVz"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "0HyIE2DVz"
+          },
+          "exemplar": true,
+          "expr": "container_memory_working_set_bytes{container=\"$container\",pod=\"$pod\"} / 1048576",
+          "interval": "",
+          "legendFormat": "container usage",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "0HyIE2DVz"
+          },
+          "exemplar": true,
+          "expr": "avg(kube_pod_container_resource_requests{container=\"$container\",pod=\"$pod\",resource=\"memory\"}) / 1048576",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "container request",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "0HyIE2DVz"
+          },
+          "exemplar": true,
+          "expr": "avg(kube_pod_container_resource_limits{pod=\"$pod\",container=\"$container\",resource=\"memory\"}) / 1048576",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "container limit",
+          "refId": "C"
+        }
+      ],
+      "title": "Memory",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "auth-batch-extractor-2023-06-05-2784310-1-driver",
+          "value": "auth-batch-extractor-2023-06-05-2784310-1-driver"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "0HyIE2DVz"
+        },
+        "definition": "label_values(kube_pod_container_resource_requests{},pod)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Pod",
+        "multi": false,
+        "name": "pod",
+        "options": [],
+        "query": {
+          "query": "label_values(kube_pod_container_resource_requests{},pod)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "spark-kubernetes-driver",
+          "value": "spark-kubernetes-driver"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "0HyIE2DVz"
+        },
+        "definition": "label_values(kube_pod_container_resource_requests{pod=~\"$pod\"},container)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Container",
+        "multi": false,
+        "name": "container",
+        "options": [],
+        "query": {
+          "query": "label_values(kube_pod_container_resource_requests{pod=~\"$pod\"},container)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Monitor Pod CPU and Memory usage",
+  "uid": "wu-8KEN7z",
+  "version": 3,
+  "weekStart": ""
+}

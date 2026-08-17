@@ -1,0 +1,3727 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 277,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "collapsed": true,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 20,
+        "panels": [
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "description": "Source: ElasticSearch; Index: landing_auth_events*\n\nInput: trackingNumber\n\nDescription: When monitoring a service interaction it's important to understand the list of every interaction b/w services and time taken for each one of them. This panel highlights the calls that's taking more time, violating the thresholds.\n\nGreen: [0 - 100]\t\t\t\nYellow: [101 - 150]\t\t\t\nRed: [151 - 10000]\n",
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "custom": {
+                  "align": "auto",
+                  "displayMode": "auto",
+                  "inspect": false
+                },
+                "mappings": [
+                  {
+                    "options": {
+                      "from": 0,
+                      "result": {
+                        "color": "green",
+                        "index": 0
+                      },
+                      "to": 100
+                    },
+                    "type": "range"
+                  },
+                  {
+                    "options": {
+                      "from": 101,
+                      "result": {
+                        "color": "orange",
+                        "index": 1
+                      },
+                      "to": 150
+                    },
+                    "type": "range"
+                  },
+                  {
+                    "options": {
+                      "from": 151,
+                      "result": {
+                        "color": "red",
+                        "index": 2
+                      },
+                      "to": 10000
+                    },
+                    "type": "range"
+                  }
+                ],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "matcher": {
+                    "id": "byName",
+                    "options": "timeTaken"
+                  },
+                  "properties": [
+                    {
+                      "id": "mappings",
+                      "value": [
+                        {
+                          "options": {
+                            "from": 0,
+                            "result": {
+                              "color": "green",
+                              "index": 0
+                            },
+                            "to": 150
+                          },
+                          "type": "range"
+                        },
+                        {
+                          "options": {
+                            "from": 151,
+                            "result": {
+                              "color": "orange",
+                              "index": 1
+                            },
+                            "to": 300
+                          },
+                          "type": "range"
+                        },
+                        {
+                          "options": {
+                            "from": 301,
+                            "result": {
+                              "color": "red",
+                              "index": 2
+                            },
+                            "to": 10000
+                          },
+                          "type": "range"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "custom.displayMode",
+                      "value": "color-background-solid"
+                    }
+                  ]
+                },
+                {
+                  "matcher": {
+                    "id": "byName",
+                    "options": "slaType"
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.width",
+                      "value": 784
+                    }
+                  ]
+                }
+              ]
+            },
+            "gridPos": {
+              "h": 12,
+              "w": 14,
+              "x": 0,
+              "y": 25
+            },
+            "id": 12,
+            "options": {
+              "footer": {
+                "enablePagination": true,
+                "fields": "",
+                "reducer": [
+                  "sum"
+                ],
+                "show": false
+              },
+              "showHeader": true,
+              "sortBy": [
+                {
+                  "desc": true,
+                  "displayName": "timeTaken"
+                }
+              ]
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "",
+                "bucketAggs": [],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "id": "1",
+                    "settings": {
+                      "order": "desc",
+                      "size": "500",
+                      "useTimeRange": true
+                    },
+                    "type": "raw_document"
+                  }
+                ],
+                "query": "event.trackingNumber:\"$trackingNumber\"",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "timeTaken to all calls for $trackingNumber",
+            "transformations": [
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "A"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "event",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "RMUAaYkBF2xGiC4SfA0U"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "measurements"
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "replace": true,
+                  "source": "measurements"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "pattern": ""
+                  }
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "GatewayServiceImpl_GatewayServiceImpl.handleRequest_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "TemplateProviderImpl_TemplateProviderImpl.getRestTemplate",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "PrimaryConfigCacheServiceImpl_PrimaryConfigCacheServiceImpl.getAuthgatewayConfigCache_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "CVVKeyConfigProviderImpl_CVVKeyConfigProviderImpl.updateCache",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "LineKeyConfigProviderImpl_LineKeyConfigProviderImpl.getKeyType_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "/platform/gateway/message/iso8583",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "HSMRequestServiceImpl_HSMRequestServiceImpl.process",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "PINKeyConfigProviderImpl_PINKeyConfigProviderImpl.updateCache",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "ARQCKeyConfigProviderImpl_ARQCKeyConfigProviderImpl.getKeyType",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "PINChangeKeyConfigProviderImpl_PINChangeKeyConfigProviderImpl.updateCache_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "LineKeyConfigProviderImpl_LineKeyConfigProviderImpl.getKeyType",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "ISO8583RequestProcessingServiceImpl_ISO8583RequestProcessingServiceImpl.processRequest",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "PINChangeKeyConfigProviderImpl_PINChangeKeyConfigProviderImpl.updateCache",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.tokenize_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "SqlPinProviderImpl_SqlPinProviderImpl.getProvider_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "DaxPinProviderImpl_DaxPinProviderImpl.getProvider_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "LineKeyConfigProviderImpl_LineKeyConfigProviderImpl.updateCache",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "PINKeyConfigProviderImpl_PINKeyConfigProviderImpl.updateCache_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "KeyCrossRefConfigProviderImpl_KeyCrossRefConfigProviderImpl.updateCache",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "TrafficRouterConfigDao_TrafficRouterConfigDao.getTrafficRouterConfigDetails_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "ISO8583RequestProcessingServiceImpl_ISO8583RequestProcessingServiceImpl.processRequest_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "PINKeyConfigProviderImpl_PINKeyConfigProviderImpl.getKeyType_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "KeyCrossRefConfigProviderImpl_KeyCrossRefConfigProviderImpl.getKeyType_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "CVVKeyConfigProviderImpl_CVVKeyConfigProviderImpl.getKeyType_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "HSMRequestServiceImpl_HSMRequestServiceImpl.process_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "TrafficRouterConfigDao_TrafficRouterConfigDao.getTrafficRouterConfigDetails",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "KeyStoreConfigProviderImpl_KeyStoreConfigProviderImpl.updateCache",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "DCVVKeyConfigProviderImpl_DCVVKeyConfigProviderImpl.getKeyType_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "DaxPinProviderImpl_DaxPinProviderImpl.getProvider",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "SqlPinProviderImpl_SqlPinProviderImpl.getProvider",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "WebIdentityDaxClientProviderImpl_WebIdentityDaxClientProviderImpl.createDaxClient",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "DCVVKeyConfigProviderImpl_DCVVKeyConfigProviderImpl.updateCache_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "PINChangeKeyConfigProviderImpl_PINChangeKeyConfigProviderImpl.getKeyType_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "GatewayServiceImpl_GatewayServiceImpl.handleRequest",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "KeyStoreConfigProviderImpl_KeyStoreConfigProviderImpl.getKeyType",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "ServiceHandler_ServiceHandler.process_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "PINChangeKeyConfigProviderImpl_PINChangeKeyConfigProviderImpl.getKeyType",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "TemplateProviderImpl_TemplateProviderImpl.getRestTemplate_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "PINKeyConfigProviderImpl_PINKeyConfigProviderImpl.getKeyType",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "DCVVKeyConfigProviderImpl_DCVVKeyConfigProviderImpl.updateCache",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "KeyCrossRefConfigProviderImpl_KeyCrossRefConfigProviderImpl.getKeyType",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "PrimaryConfigCacheServiceImpl_PrimaryConfigCacheServiceImpl.getAuthgatewayConfigCache",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "CVVKeyConfigProviderImpl_CVVKeyConfigProviderImpl.getKeyType",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "ServiceHandler_ServiceHandler.process",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "WebIdentityDaxClientProviderImpl_WebIdentityDaxClientProviderImpl.createDaxClient_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "CVVKeyConfigProviderImpl_CVVKeyConfigProviderImpl.updateCache_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "ARQCKeyConfigProviderImpl_ARQCKeyConfigProviderImpl.getKeyType_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "KeyStoreConfigProviderImpl_KeyStoreConfigProviderImpl.updateCache_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "LineKeyConfigProviderImpl_LineKeyConfigProviderImpl.updateCache_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.tokenize",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "ARQCKeyConfigProviderImpl_ARQCKeyConfigProviderImpl.updateCache",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "DCVVKeyConfigProviderImpl_DCVVKeyConfigProviderImpl.getKeyType",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "KeyStoreConfigProviderImpl_KeyStoreConfigProviderImpl.getKeyType_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "ARQCKeyConfigProviderImpl_ARQCKeyConfigProviderImpl.updateCache_Count",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "KeyCrossRefConfigProviderImpl_KeyCrossRefConfigProviderImpl.updateCache_Count",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "reduce",
+                "options": {
+                  "includeTimeField": false,
+                  "mode": "seriesToRows",
+                  "reducers": [
+                    "allValues"
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "replace": true,
+                  "source": "All values"
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "replace": true,
+                  "source": "0"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "timeTaken",
+                      "slaType"
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "organize",
+                "options": {
+                  "excludeByName": {},
+                  "indexByName": {
+                    "slaType": 0,
+                    "timeTaken": 1
+                  },
+                  "renameByName": {
+                    "timeTaken": ""
+                  }
+                }
+              }
+            ],
+            "type": "table"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "custom": {
+                  "align": "auto",
+                  "displayMode": "auto",
+                  "inspect": false
+                },
+                "displayName": "Create Client",
+                "mappings": [
+                  {
+                    "options": {
+                      "from": 0,
+                      "result": {
+                        "color": "semi-dark-green",
+                        "index": 0
+                      },
+                      "to": 200
+                    },
+                    "type": "range"
+                  },
+                  {
+                    "options": {
+                      "from": 201,
+                      "result": {
+                        "color": "semi-dark-orange",
+                        "index": 1
+                      },
+                      "to": 300
+                    },
+                    "type": "range"
+                  },
+                  {
+                    "options": {
+                      "from": 300,
+                      "result": {
+                        "color": "semi-dark-red",
+                        "index": 2
+                      },
+                      "to": 10000
+                    },
+                    "type": "range"
+                  }
+                ],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 4,
+              "w": 7,
+              "x": 14,
+              "y": 25
+            },
+            "id": 6,
+            "options": {
+              "footer": {
+                "fields": "",
+                "reducer": [
+                  "sum"
+                ],
+                "show": false
+              },
+              "showHeader": true,
+              "sortBy": [
+                {
+                  "desc": true,
+                  "displayName": "Create Client"
+                }
+              ]
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "Web createClient",
+                "bucketAggs": [
+                  {
+                    "field": "event.application.keyword",
+                    "id": "9",
+                    "settings": {
+                      "min_doc_count": "0",
+                      "order": "desc",
+                      "orderBy": "_term",
+                      "size": "10"
+                    },
+                    "type": "terms"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "luceneQueryType": "Metric",
+                "metrics": [
+                  {
+                    "id": "6",
+                    "type": "count"
+                  }
+                ],
+                "query": "event.trackingNumber:\"$trackingNumber\"",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "Calls to application based for $trackingNumber",
+            "transformations": [
+              {
+                "id": "filterByValue",
+                "options": {
+                  "filters": [
+                    {
+                      "config": {
+                        "id": "equal",
+                        "options": {
+                          "value": "0"
+                        }
+                      },
+                      "fieldName": "Count"
+                    }
+                  ],
+                  "match": "all",
+                  "type": "exclude"
+                }
+              }
+            ],
+            "type": "table"
+          }
+        ],
+        "title": "Overview",
+        "type": "row"
+      },
+      {
+        "collapsed": true,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 1
+        },
+        "id": 14,
+        "panels": [
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "description": "Source: ElasticSearch; Index: landing_auth_events*\n\nInput: trackingNumber\n\nDescription: This panel show the total time taken for all the interactions to DynamoDB",
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "displayName": "Create Client",
+                "mappings": [
+                  {
+                    "options": {
+                      "from": 0,
+                      "result": {
+                        "color": "semi-dark-green",
+                        "index": 0
+                      },
+                      "to": 200
+                    },
+                    "type": "range"
+                  },
+                  {
+                    "options": {
+                      "from": 201,
+                      "result": {
+                        "color": "semi-dark-orange",
+                        "index": 1
+                      },
+                      "to": 300
+                    },
+                    "type": "range"
+                  },
+                  {
+                    "options": {
+                      "from": 300,
+                      "result": {
+                        "color": "semi-dark-red",
+                        "index": 2
+                      },
+                      "to": 10000
+                    },
+                    "type": "range"
+                  }
+                ],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 4,
+              "w": 7,
+              "x": 0,
+              "y": 18
+            },
+            "id": 2,
+            "options": {
+              "colorMode": "background",
+              "graphMode": "none",
+              "justifyMode": "center",
+              "orientation": "auto",
+              "reduceOptions": {
+                "calcs": [
+                  "lastNotNull"
+                ],
+                "fields": "",
+                "values": false
+              },
+              "textMode": "auto"
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "WebCreateClient",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "4",
+                    "settings": {
+                      "interval": "auto",
+                      "min_doc_count": "0",
+                      "trimEdges": "0"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient.timeTaken",
+                    "hide": false,
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "count": true,
+                      "max": false,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:$trackingNumber",
+                "queryType": "lucene",
+                "refId": "C",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "fetchAccountDetails",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "4",
+                    "settings": {
+                      "interval": "auto",
+                      "min_doc_count": "0",
+                      "trimEdges": "0"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.AccountServiceDynamoProviderImpl_AccountServiceDynamoProviderImpl.fetchAccountDetails.timeTaken",
+                    "hide": false,
+                    "id": "1",
+                    "meta": {
+                      "count": true,
+                      "max": false,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:$trackingNumber",
+                "queryType": "lucene",
+                "refId": "D",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "Total TimeTaken for all Dynamo Interactions",
+            "transformations": [],
+            "type": "stat"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "description": "Source: ElasticSearch; Index: landing_auth_events*\n\nMeasurements: _id:\"RMUAaYkBF2xGiC4SfA0U\"\n\nDescription: This panel will list down all the available calls to DynamoDB, use this information to correlate the transactions you want to track for a specific trackingNumber. So to draw some analysis on what calls are expected.",
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "custom": {
+                  "align": "auto",
+                  "displayMode": "auto",
+                  "inspect": false
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "matcher": {
+                    "id": "byName",
+                    "options": "measurements"
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.width",
+                      "value": 198
+                    }
+                  ]
+                },
+                {
+                  "matcher": {
+                    "id": "byName",
+                    "options": "GatewayServiceImpl_GatewayServiceImpl.handleRequest_Count"
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.width",
+                      "value": 796
+                    }
+                  ]
+                }
+              ]
+            },
+            "gridPos": {
+              "h": 4,
+              "w": 10,
+              "x": 7,
+              "y": 18
+            },
+            "id": 8,
+            "options": {
+              "footer": {
+                "fields": "",
+                "reducer": [
+                  "sum"
+                ],
+                "show": false
+              },
+              "showHeader": true,
+              "sortBy": []
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "",
+                "bucketAggs": [],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "id": "1",
+                    "settings": {
+                      "order": "desc",
+                      "size": "500",
+                      "useTimeRange": true
+                    },
+                    "type": "raw_document"
+                  }
+                ],
+                "query": "_id:\"RMUAaYkBF2xGiC4SfA0U\"",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "List of available calls to Dynamo",
+            "transformations": [
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "A"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "event",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "RMUAaYkBF2xGiC4SfA0U {_index=\"landing_auth_events-2023-07-14\", _type=\"_doc\", authenticationType=\"SYSTEM\", headerDetails=\"{authorization=EXAMPLE_SYSTEM c3lzdGVtOnBhc3N3b3Jk, content-length=1554, postman-token=a3f5b7cf-62b9-40fa-aa24-4393610c315a, channel=PLSE, host=localhost:8082, content-type=text/plain, connection=keep-alive, client_id=2220, accept-encoding=gzip, deflate, user-agent=PostmanRuntime/7.19.0, accept=*/*}\", id=\"sE952dvFehgtULoh\", ipAddress=\"0:0:0:0:0:0:0:1\", loginId=\"system\", operation=\"AuthGatewayController.processISOMessage.title\", os_index=\"landing_auth_events-2023-07-14\", os_score=\"\", os_version=\"1\", parameters=\"{}\", requestType=\"POST\", requestedURI=\"/platform/gateway/message/iso8583\", responseCode=\"200\", segment=\"AuthGatewayController.processISOMessage.group\", type=\"_doc\"}"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "measurements",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "auto",
+                  "replace": true,
+                  "source": "2023-07-18T18:06:17.081 {application=\"authgateway\", clientId=\"2220\", data=\"[object Object]\", dataSource=\"C02F5ADGMD6M\", eventReason=\"AuthGatewayController.processISOMessage.title\", organization=\"EXAMPLE\", status=\"SUCCESS\", trackingNumber=\"9ddc8d81-7168-4d0a-903e-5e0dec9ae856\", type=\"API_EVENT\"}"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient_Count",
+                      "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient"
+                    ],
+                    "pattern": "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl\\.[A-Za-z0-9]+_[A-Za-z0-9]+"
+                  }
+                }
+              },
+              {
+                "id": "reduce",
+                "options": {
+                  "includeTimeField": false,
+                  "labelsToFields": false,
+                  "mode": "seriesToRows",
+                  "reducers": [
+                    "allValues"
+                  ]
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "Field"
+                    ]
+                  }
+                }
+              }
+            ],
+            "type": "table"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "description": "Source: ElasticSearch; Index: landing_auth_events*\n\nInput: trackingNumber\n\nDescription: This panel will list down all the available calls to DynamoDB for a given trackingNumber and time taken for each one of them.",
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "custom": {
+                  "align": "auto",
+                  "displayMode": "auto",
+                  "inspect": false
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "matcher": {
+                    "id": "byName",
+                    "options": "slaType"
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.width",
+                      "value": 502
+                    }
+                  ]
+                }
+              ]
+            },
+            "gridPos": {
+              "h": 7,
+              "w": 10,
+              "x": 0,
+              "y": 22
+            },
+            "id": 10,
+            "options": {
+              "footer": {
+                "fields": "",
+                "reducer": [
+                  "sum"
+                ],
+                "show": false
+              },
+              "showHeader": true,
+              "sortBy": []
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "",
+                "bucketAggs": [],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "id": "1",
+                    "settings": {
+                      "order": "desc",
+                      "size": "500",
+                      "useTimeRange": true
+                    },
+                    "type": "raw_document"
+                  }
+                ],
+                "query": "event.trackingNumber:\"$trackingNumber\"",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "Time take for each call to DynamoDB for provided trackingNumber",
+            "transformations": [
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "A"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "event",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "RMUAaYkBF2xGiC4SfA0U {_index=\"landing_auth_events-2023-07-14\", _type=\"_doc\", authenticationType=\"SYSTEM\", headerDetails=\"{authorization=EXAMPLE_SYSTEM c3lzdGVtOnBhc3N3b3Jk, content-length=1554, postman-token=a3f5b7cf-62b9-40fa-aa24-4393610c315a, channel=PLSE, host=localhost:8082, content-type=text/plain, connection=keep-alive, client_id=2220, accept-encoding=gzip, deflate, user-agent=PostmanRuntime/7.19.0, accept=*/*}\", id=\"sE952dvFehgtULoh\", ipAddress=\"0:0:0:0:0:0:0:1\", loginId=\"system\", operation=\"AuthGatewayController.processISOMessage.title\", os_index=\"landing_auth_events-2023-07-14\", os_score=\"\", os_version=\"1\", parameters=\"{}\", requestType=\"POST\", requestedURI=\"/platform/gateway/message/iso8583\", responseCode=\"200\", segment=\"AuthGatewayController.processISOMessage.group\", type=\"_doc\"}"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "measurements",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "auto",
+                  "replace": true,
+                  "source": "2023-07-18T18:06:17.081"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient_Count",
+                      "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient"
+                    ],
+                    "pattern": "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl\\.[A-Za-z0-9]+_[A-Za-z0-9]+"
+                  }
+                }
+              },
+              {
+                "id": "reduce",
+                "options": {
+                  "includeTimeField": false,
+                  "mode": "seriesToRows",
+                  "reducers": [
+                    "allValues"
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "replace": true,
+                  "source": "All values"
+                }
+              },
+              {
+                "id": "reduce",
+                "options": {
+                  "includeTimeField": false,
+                  "mode": "seriesToRows",
+                  "reducers": []
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "source": "0"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "timeTaken",
+                      "slaType"
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "organize",
+                "options": {
+                  "excludeByName": {},
+                  "indexByName": {
+                    "slaType": 0,
+                    "timeTaken": 1
+                  },
+                  "renameByName": {}
+                }
+              }
+            ],
+            "type": "table"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "description": "Source: ElasticSearch; Index: landing_auth_events*\n\nMeasurements: _id:\"RMUAaYkBF2xGiC4SfA0U\"\n\nDescription: This panel will list down all the available calls to DynamoDB and time take for each of them over time, use this information to correlate the transactions you want to track for a specific trackingNumber. So to draw some analysis on what calls are expected.",
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "stepBefore",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": true,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 7,
+              "w": 11,
+              "x": 10,
+              "y": 22
+            },
+            "id": 18,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "createClient",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "2",
+                    "settings": {
+                      "interval": "auto",
+                      "min_doc_count": "0",
+                      "trimEdges": "0"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": true,
+                      "max": false,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "B",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "AssumeRole-createClient",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "2",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.AssumeRoleDynamoClientProviderImpl_AssumeRoleDynamoClientProviderImpl.createDynamoClient.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": true,
+                      "max": false,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "C",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "Time take for all call to DynamoDB",
+            "transformations": [
+              {
+                "disabled": true,
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "A"
+                }
+              },
+              {
+                "disabled": true,
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "A",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "event",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "disabled": true,
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "RMUAaYkBF2xGiC4SfA0U"
+                }
+              },
+              {
+                "disabled": true,
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "measurements",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "disabled": true,
+                "id": "extractFields",
+                "options": {
+                  "format": "auto",
+                  "replace": true,
+                  "source": "2023-07-18T18:06:17.081"
+                }
+              },
+              {
+                "disabled": true,
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient_Count",
+                      "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient"
+                    ],
+                    "pattern": "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl\\.[A-Za-z0-9]+_[A-Za-z0-9]+"
+                  }
+                }
+              },
+              {
+                "disabled": true,
+                "id": "reduce",
+                "options": {
+                  "includeTimeField": false,
+                  "mode": "seriesToRows",
+                  "reducers": [
+                    "allValues"
+                  ]
+                }
+              }
+            ],
+            "type": "timeseries"
+          }
+        ],
+        "title": "Interaction with DynamoDB",
+        "type": "row"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 2
+        },
+        "id": 44,
+        "panels": [],
+        "title": "Interaction with OracleDB",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "grafana-opensearch-datasource",
+          "uid": "UNEhkO34z"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 18,
+          "x": 0,
+          "y": 3
+        },
+        "id": 46,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.6",
+        "targets": [
+          {
+            "alias": "",
+            "bucketAggs": [
+              {
+                "field": "event.measurements.SqlPinProviderImpl_SqlPinProviderImpl.getProvider.slaType.keyword",
+                "id": "3",
+                "settings": {
+                  "min_doc_count": "0",
+                  "order": "desc",
+                  "orderBy": "_term",
+                  "size": "10"
+                },
+                "type": "terms"
+              }
+            ],
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "format": "table",
+            "metrics": [
+              {
+                "field": "event.measurements.SqlPinProviderImpl_SqlPinProviderImpl.getProvider.timeTaken",
+                "id": "1",
+                "type": "avg"
+              }
+            ],
+            "query": "event.trackingNumber:*",
+            "queryType": "lucene",
+            "refId": "A",
+            "timeField": "event.dateTime"
+          },
+          {
+            "alias": "",
+            "bucketAggs": [
+              {
+                "field": "event.measurements.SqlPinProviderImpl_SqlPinProviderImpl.getPinOffset.slaType.keyword",
+                "id": "3",
+                "settings": {
+                  "min_doc_count": "0",
+                  "order": "desc",
+                  "orderBy": "_term",
+                  "size": "10"
+                },
+                "type": "terms"
+              }
+            ],
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "format": "table",
+            "hide": false,
+            "metrics": [
+              {
+                "field": "event.measurements.SqlPinProviderImpl_SqlPinProviderImpl.getPinOffset.timeTaken",
+                "id": "1",
+                "type": "avg"
+              }
+            ],
+            "query": "event.trackingNumber:*",
+            "queryType": "lucene",
+            "refId": "B",
+            "timeField": "event.dateTime"
+          },
+          {
+            "alias": "",
+            "bucketAggs": [
+              {
+                "field": "event.measurements.SqlPinProviderImpl_SqlPinProviderImpl.getPinOffset_Count.slaType.keyword",
+                "id": "3",
+                "settings": {
+                  "min_doc_count": "0",
+                  "order": "desc",
+                  "orderBy": "_term",
+                  "size": "10"
+                },
+                "type": "terms"
+              }
+            ],
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "format": "table",
+            "hide": false,
+            "metrics": [
+              {
+                "field": "event.measurements.SqlPinProviderImpl_SqlPinProviderImpl.getPinOffset_Count.timeTaken",
+                "id": "1",
+                "type": "avg"
+              }
+            ],
+            "query": "event.trackingNumber:*",
+            "queryType": "lucene",
+            "refId": "C",
+            "timeField": "event.dateTime"
+          }
+        ],
+        "title": "Time for all available Interaction",
+        "transformations": [
+          {
+            "id": "rowsToFields",
+            "options": {}
+          }
+        ],
+        "type": "stat"
+      },
+      {
+        "collapsed": true,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 10
+        },
+        "id": 16,
+        "panels": [
+          {
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "9rLZxrH4z"
+            },
+            "description": "Source: OpenSearch",
+            "gridPos": {
+              "h": 2,
+              "w": 16,
+              "x": 3,
+              "y": 19
+            },
+            "id": 28,
+            "options": {
+              "code": {
+                "language": "plaintext",
+                "showLineNumbers": false,
+                "showMiniMap": false
+              },
+              "content": "<h1 style=\"text-align: center; color:#3880eb; font-size: 35px\">GRPC Service</h1>",
+              "mode": "markdown"
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "accountId": "all",
+                "datasource": {
+                  "type": "cloudwatch",
+                  "uid": "9rLZxrH4z"
+                },
+                "dimensions": {},
+                "expression": "",
+                "id": "",
+                "label": "",
+                "matchExact": true,
+                "metricEditorMode": 0,
+                "metricName": "",
+                "metricQueryType": 0,
+                "namespace": "",
+                "period": "",
+                "queryMode": "Metrics",
+                "refId": "A",
+                "region": "default",
+                "sqlExpression": "",
+                "statistic": "Average"
+              }
+            ],
+            "type": "text"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "custom": {
+                  "align": "auto",
+                  "displayMode": "auto",
+                  "inspect": false
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 7,
+              "w": 10,
+              "x": 0,
+              "y": 21
+            },
+            "id": 22,
+            "options": {
+              "footer": {
+                "fields": "",
+                "reducer": [
+                  "sum"
+                ],
+                "show": false
+              },
+              "showHeader": true,
+              "sortBy": []
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "",
+                "bucketAggs": [],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "id": "1",
+                    "settings": {
+                      "order": "desc",
+                      "size": "500",
+                      "useTimeRange": true
+                    },
+                    "type": "raw_document"
+                  }
+                ],
+                "query": "_id:\"RMUAaYkBF2xGiC4SfA0U\"",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "List of calls to Gateway service",
+            "transformations": [
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "A"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "event",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "RMUAaYkBF2xGiC4SfA0U"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "measurements",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "auto",
+                  "replace": true,
+                  "source": "2023-07-18T18:06:17.081"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "GatewayServiceImpl_GatewayServiceImpl.handleRequest_Count",
+                      "/platform/gateway/message/iso8583",
+                      "GatewayServiceImpl_GatewayServiceImpl.handleRequest",
+                      "PrimaryConfigCacheServiceImpl_PrimaryConfigCacheServiceImpl.getAuthgatewayConfigCache",
+                      "PrimaryConfigCacheServiceImpl_PrimaryConfigCacheServiceImpl.getAuthgatewayConfigCache_Count"
+                    ],
+                    "pattern": "GatewayServiceImpl_GatewayServiceImpl.handleRequest_Count"
+                  }
+                }
+              },
+              {
+                "id": "reduce",
+                "options": {
+                  "includeTimeField": false,
+                  "mode": "seriesToRows",
+                  "reducers": [
+                    "allValues"
+                  ]
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "Field"
+                    ]
+                  }
+                }
+              }
+            ],
+            "type": "table"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "custom": {
+                  "align": "auto",
+                  "displayMode": "auto",
+                  "inspect": false
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 300
+                    }
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "matcher": {
+                    "id": "byName",
+                    "options": "timeTaken"
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.displayMode",
+                      "value": "gradient-gauge"
+                    }
+                  ]
+                }
+              ]
+            },
+            "gridPos": {
+              "h": 7,
+              "w": 10,
+              "x": 10,
+              "y": 21
+            },
+            "id": 24,
+            "options": {
+              "footer": {
+                "fields": "",
+                "reducer": [
+                  "sum"
+                ],
+                "show": false
+              },
+              "showHeader": true,
+              "sortBy": [
+                {
+                  "desc": true,
+                  "displayName": "timeTaken"
+                }
+              ]
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "",
+                "bucketAggs": [],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "id": "1",
+                    "settings": {
+                      "order": "desc",
+                      "size": "500",
+                      "useTimeRange": true
+                    },
+                    "type": "raw_document"
+                  }
+                ],
+                "query": "event.trackingNumber:\"$trackingNumber\"",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "Time take for each call to Gateway service for selected trackingNumber",
+            "transformations": [
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "A"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "A",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "event",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "RMUAaYkBF2xGiC4SfA0U"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "measurements",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "auto",
+                  "replace": true,
+                  "source": "2023-07-18T18:06:17.081"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "GatewayServiceImpl_GatewayServiceImpl.handleRequest_Count",
+                      "/platform/gateway/message/iso8583",
+                      "GatewayServiceImpl_GatewayServiceImpl.handleRequest",
+                      "PrimaryConfigCacheServiceImpl_PrimaryConfigCacheServiceImpl.getAuthgatewayConfigCache",
+                      "PrimaryConfigCacheServiceImpl_PrimaryConfigCacheServiceImpl.getAuthgatewayConfigCache_Count"
+                    ],
+                    "pattern": "GatewayServiceImpl_GatewayServiceImpl.handleRequest_Count"
+                  }
+                }
+              },
+              {
+                "id": "reduce",
+                "options": {
+                  "includeTimeField": false,
+                  "mode": "seriesToRows",
+                  "reducers": [
+                    "allValues"
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "replace": true,
+                  "source": "All values"
+                }
+              },
+              {
+                "id": "reduce",
+                "options": {
+                  "labelsToFields": false,
+                  "reducers": []
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "replace": true,
+                  "source": "0"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "timeTaken",
+                      "slaType"
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "organize",
+                "options": {
+                  "excludeByName": {},
+                  "indexByName": {
+                    "slaType": 0,
+                    "timeTaken": 1
+                  },
+                  "renameByName": {}
+                }
+              }
+            ],
+            "type": "table"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "fillOpacity": 100,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineWidth": 9,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 7,
+              "w": 7,
+              "x": 0,
+              "y": 28
+            },
+            "id": 4,
+            "options": {
+              "barRadius": 0,
+              "barWidth": 1,
+              "groupWidth": 0.7,
+              "legend": {
+                "calcs": [],
+                "displayMode": "table",
+                "placement": "right",
+                "showLegend": true
+              },
+              "orientation": "auto",
+              "showValue": "auto",
+              "stacking": "none",
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              },
+              "xTickLabelRotation": 0,
+              "xTickLabelSpacing": 100
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "GetAuthGatewayConfigCache",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "field": "event.measurements.PrimaryConfigCacheServiceImpl_PrimaryConfigCacheServiceImpl.getAuthgatewayConfigCache.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:\"9ddc8d81-7168-4d0a-903e-5e0dec9ae856\"",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "GatewayServiceImpl",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.GatewayServiceImpl_GatewayServiceImpl.handleRequest.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:\"9ddc8d81-7168-4d0a-903e-5e0dec9ae856\"",
+                "queryType": "lucene",
+                "refId": "B",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "Gateway responseTimes",
+            "type": "barchart"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 32,
+                  "gradientMode": "hue",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": true,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 7,
+              "w": 17,
+              "x": 7,
+              "y": 28
+            },
+            "id": 26,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "/platform/gateway/message",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "2",
+                    "settings": {
+                      "interval": "auto",
+                      "min_doc_count": "0",
+                      "trimEdges": "0"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements./platform/gateway/message.timeTaken",
+                    "id": "1",
+                    "type": "avg"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "B",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "GatewayServiceImpl_handleRequest_Count",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "2",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.GatewayServiceImpl_GatewayServiceImpl.handleRequest_Count.timeTaken",
+                    "id": "1",
+                    "type": "avg"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "C",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "GatewayServiceImpl_handleRequest",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "2",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.GatewayServiceImpl_GatewayServiceImpl.handleRequest.timeTaken",
+                    "id": "1",
+                    "type": "avg"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "getAuthGatewayConfigCache",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "2",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.PrimaryConfigCacheServiceImpl_PrimaryConfigCacheServiceImpl.getAuthgatewayConfigCache.timeTaken",
+                    "id": "1",
+                    "type": "avg"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "D",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "GatewayServiceImpl.handleRequest_Count",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "2",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.PrimaryConfigCacheServiceImpl_PrimaryConfigCacheServiceImpl.getAuthgatewayConfigCache_Count.timeTaken",
+                    "id": "1",
+                    "type": "avg"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "E",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "Time take for each call to Gateway service - $trackingNumber",
+            "transformations": [
+              {
+                "disabled": true,
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "A"
+                }
+              },
+              {
+                "disabled": true,
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "A",
+                      "handlerKey": "field.value"
+                    },
+                    {
+                      "fieldName": "event",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "disabled": true,
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "RMUAaYkBF2xGiC4SfA0U"
+                }
+              },
+              {
+                "disabled": true,
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "measurements",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "disabled": true,
+                "id": "extractFields",
+                "options": {
+                  "format": "auto",
+                  "replace": true,
+                  "source": "2023-07-18T18:06:17.081"
+                }
+              },
+              {
+                "disabled": true,
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient_Count",
+                      "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl.createDynamoClient"
+                    ],
+                    "pattern": "WebIdentityDynamoClientProviderImpl_WebIdentityDynamoClientProviderImpl\\.[A-Za-z0-9]+_[A-Za-z0-9]+"
+                  }
+                }
+              },
+              {
+                "disabled": true,
+                "id": "reduce",
+                "options": {
+                  "includeTimeField": false,
+                  "mode": "seriesToRows",
+                  "reducers": [
+                    "allValues"
+                  ]
+                }
+              }
+            ],
+            "type": "timeseries"
+          },
+          {
+            "datasource": {
+              "type": "cloudwatch",
+              "uid": "9rLZxrH4z"
+            },
+            "description": "Source: OpenSearch",
+            "gridPos": {
+              "h": 2,
+              "w": 15,
+              "x": 3,
+              "y": 35
+            },
+            "id": 30,
+            "options": {
+              "code": {
+                "language": "plaintext",
+                "showLineNumbers": false,
+                "showMiniMap": false
+              },
+              "content": "<h1 style=\"text-align: center; color:#3880eb; font-size: 35px\">Tokenization Service</h1>",
+              "mode": "markdown"
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "accountId": "all",
+                "datasource": {
+                  "type": "cloudwatch",
+                  "uid": "9rLZxrH4z"
+                },
+                "dimensions": {},
+                "expression": "",
+                "id": "",
+                "label": "",
+                "matchExact": true,
+                "metricEditorMode": 0,
+                "metricName": "",
+                "metricQueryType": 0,
+                "namespace": "",
+                "period": "",
+                "queryMode": "Metrics",
+                "refId": "A",
+                "region": "default",
+                "sqlExpression": "",
+                "statistic": "Average"
+              }
+            ],
+            "type": "text"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "custom": {
+                  "align": "auto",
+                  "displayMode": "auto",
+                  "inspect": false
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 300
+                    }
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "matcher": {
+                    "id": "byName",
+                    "options": "timeTaken"
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.displayMode",
+                      "value": "gradient-gauge"
+                    }
+                  ]
+                }
+              ]
+            },
+            "gridPos": {
+              "h": 5,
+              "w": 8,
+              "x": 0,
+              "y": 37
+            },
+            "id": 34,
+            "options": {
+              "footer": {
+                "fields": "",
+                "reducer": [
+                  "sum"
+                ],
+                "show": false
+              },
+              "showHeader": true,
+              "sortBy": []
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "",
+                "bucketAggs": [],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "id": "1",
+                    "settings": {
+                      "order": "desc",
+                      "size": "500",
+                      "useTimeRange": true
+                    },
+                    "type": "raw_document"
+                  }
+                ],
+                "query": "_id:\"RMUAaYkBF2xGiC4SfA0U\"",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "List of calls to Tokenization service",
+            "transformations": [
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "kvp",
+                  "replace": true,
+                  "source": "A"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "event",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "RMUAaYkBF2xGiC4SfA0U {_index=\"landing_auth_events-2023-07-14\", _type=\"_doc\", authenticationType=\"SYSTEM\", headerDetails=\"{authorization=EXAMPLE_SYSTEM c3lzdGVtOnBhc3N3b3Jk, content-length=1554, postman-token=a3f5b7cf-62b9-40fa-aa24-4393610c315a, channel=PLSE, host=localhost:8082, content-type=text/plain, connection=keep-alive, client_id=2220, accept-encoding=gzip, deflate, user-agent=PostmanRuntime/7.19.0, accept=*/*}\", id=\"sE952dvFehgtULoh\", ipAddress=\"0:0:0:0:0:0:0:1\", loginId=\"system\", operation=\"AuthGatewayController.processISOMessage.title\", os_index=\"landing_auth_events-2023-07-14\", os_score=\"\", os_version=\"1\", parameters=\"{}\", requestType=\"POST\", requestedURI=\"/platform/gateway/message/iso8583\", responseCode=\"200\", segment=\"AuthGatewayController.processISOMessage.group\", type=\"_doc\"}"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "measurements",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "kvp",
+                  "replace": true,
+                  "source": "2023-07-18T18:06:17.081 {application=\"authgateway\", clientId=\"2220\", data=\"[object Object]\", dataSource=\"C02F5ADGMD6M\", eventReason=\"AuthGatewayController.processISOMessage.title\", organization=\"EXAMPLE\", status=\"SUCCESS\", trackingNumber=\"9ddc8d81-7168-4d0a-903e-5e0dec9ae856\", type=\"API_EVENT\"}"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.tokenize_Count",
+                      "GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.tokenize"
+                    ],
+                    "pattern": "GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.tokenize"
+                  }
+                }
+              },
+              {
+                "id": "reduce",
+                "options": {
+                  "labelsToFields": true,
+                  "reducers": [
+                    "allValues"
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "replace": true,
+                  "source": "All values"
+                }
+              },
+              {
+                "id": "reduce",
+                "options": {
+                  "labelsToFields": false,
+                  "reducers": []
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "replace": true,
+                  "source": "0"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "slaType"
+                    ]
+                  }
+                }
+              }
+            ],
+            "type": "table"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "custom": {
+                  "align": "auto",
+                  "displayMode": "auto",
+                  "inspect": false
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 300
+                    }
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "matcher": {
+                    "id": "byName",
+                    "options": "timeTaken"
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.displayMode",
+                      "value": "gradient-gauge"
+                    }
+                  ]
+                }
+              ]
+            },
+            "gridPos": {
+              "h": 5,
+              "w": 10,
+              "x": 8,
+              "y": 37
+            },
+            "id": 42,
+            "options": {
+              "footer": {
+                "fields": "",
+                "reducer": [
+                  "sum"
+                ],
+                "show": false
+              },
+              "showHeader": true,
+              "sortBy": []
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "",
+                "bucketAggs": [],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "id": "1",
+                    "settings": {
+                      "order": "desc",
+                      "size": "500",
+                      "useTimeRange": true
+                    },
+                    "type": "raw_document"
+                  }
+                ],
+                "query": "event.trackingNumber:\"$trackingNumber\"",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "List of calls to Tokenization service for $trackingNumber",
+            "transformations": [
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "kvp",
+                  "replace": true,
+                  "source": "A"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "event",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "json",
+                  "replace": true,
+                  "source": "RMUAaYkBF2xGiC4SfA0U {_index=\"landing_auth_events-2023-07-14\", _type=\"_doc\", authenticationType=\"SYSTEM\", headerDetails=\"{authorization=EXAMPLE_SYSTEM c3lzdGVtOnBhc3N3b3Jk, content-length=1554, postman-token=a3f5b7cf-62b9-40fa-aa24-4393610c315a, channel=PLSE, host=localhost:8082, content-type=text/plain, connection=keep-alive, client_id=2220, accept-encoding=gzip, deflate, user-agent=PostmanRuntime/7.19.0, accept=*/*}\", id=\"sE952dvFehgtULoh\", ipAddress=\"0:0:0:0:0:0:0:1\", loginId=\"system\", operation=\"AuthGatewayController.processISOMessage.title\", os_index=\"landing_auth_events-2023-07-14\", os_score=\"\", os_version=\"1\", parameters=\"{}\", requestType=\"POST\", requestedURI=\"/platform/gateway/message/iso8583\", responseCode=\"200\", segment=\"AuthGatewayController.processISOMessage.group\", type=\"_doc\"}"
+                }
+              },
+              {
+                "id": "rowsToFields",
+                "options": {
+                  "mappings": [
+                    {
+                      "fieldName": "measurements",
+                      "handlerKey": "field.value"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "format": "kvp",
+                  "replace": true,
+                  "source": "2023-07-18T18:06:17.081 {application=\"authgateway\", clientId=\"2220\", data=\"[object Object]\", dataSource=\"C02F5ADGMD6M\", eventReason=\"AuthGatewayController.processISOMessage.title\", organization=\"EXAMPLE\", status=\"SUCCESS\", trackingNumber=\"9ddc8d81-7168-4d0a-903e-5e0dec9ae856\", type=\"API_EVENT\"}"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.tokenize_Count",
+                      "GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.tokenize"
+                    ],
+                    "pattern": "GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.tokenize"
+                  }
+                }
+              },
+              {
+                "id": "reduce",
+                "options": {
+                  "labelsToFields": true,
+                  "reducers": [
+                    "allValues"
+                  ]
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "replace": true,
+                  "source": "All values"
+                }
+              },
+              {
+                "id": "reduce",
+                "options": {
+                  "labelsToFields": false,
+                  "reducers": []
+                }
+              },
+              {
+                "id": "extractFields",
+                "options": {
+                  "replace": true,
+                  "source": "0"
+                }
+              },
+              {
+                "id": "filterFieldsByName",
+                "options": {
+                  "include": {
+                    "names": [
+                      "timeTaken",
+                      "slaType"
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "organize",
+                "options": {
+                  "excludeByName": {},
+                  "indexByName": {
+                    "slaType": 0,
+                    "timeTaken": 1
+                  },
+                  "renameByName": {}
+                }
+              }
+            ],
+            "type": "table"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "fillOpacity": 100,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineWidth": 9,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "__systemRef": "hideSeriesFrom",
+                  "matcher": {
+                    "id": "byNames",
+                    "options": {
+                      "mode": "exclude",
+                      "names": [
+                        "deTokenize",
+                        "tokenizationGRPC",
+                        "getMultiToken",
+                        "getMultiClearValue",
+                        "getNamespaceForPortfolioId"
+                      ],
+                      "prefix": "All except:",
+                      "readOnly": true
+                    }
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.hideFrom",
+                      "value": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "gridPos": {
+              "h": 6,
+              "w": 10,
+              "x": 0,
+              "y": 42
+            },
+            "id": 36,
+            "options": {
+              "barRadius": 0,
+              "barWidth": 1,
+              "groupWidth": 0.7,
+              "legend": {
+                "calcs": [],
+                "displayMode": "table",
+                "placement": "right",
+                "showLegend": true
+              },
+              "orientation": "auto",
+              "showValue": "auto",
+              "stacking": "none",
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              },
+              "xTickLabelRotation": 0,
+              "xTickLabelSpacing": 100
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "deTokenize",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "field": "event.measurements.GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.deTokenize.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "tokenizationGRPC",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.com.example.enterprise.tokenization.tokenizationgrpc.service.TokenizationService_com.example.enterprise.tokenization.tokenizationgrpc.service.TokenizationService.getMultiClearValue.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "B",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "tokenize",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.tokenize.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "C",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "getMultiToken",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.TokenizationGrpcService.Tokenization/getMultiToken.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "D",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "getMultiClearValue",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.TokenizationGrpcService.Tokenization/getMultiClearValue.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "E",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "getNamespaceForPortfolioId",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.TokenizationGrpcService.Tokenization/getNamespaceForPortfolioId.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "F",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "Tokenization calls responseTimes",
+            "type": "barchart"
+          },
+          {
+            "datasource": {
+              "type": "grafana-opensearch-datasource",
+              "uid": "UNEhkO34z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 32,
+                  "gradientMode": "hue",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineStyle": {
+                    "fill": "solid"
+                  },
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": true,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 6,
+              "w": 14,
+              "x": 10,
+              "y": 42
+            },
+            "id": 40,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+              {
+                "alias": "deTokenize",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "metrics": [
+                  {
+                    "field": "event.measurements.GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.deTokenize.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "A",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "tokenizationGRPC",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.com.example.enterprise.tokenization.tokenizationgrpc.service.TokenizationService_com.example.enterprise.tokenization.tokenizationgrpc.service.TokenizationService.getMultiClearValue.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "B",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "tokenize",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.GrpcDataTokenizationServiceImpl_GrpcDataTokenizationServiceImpl.tokenize.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "C",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "getMultiToken",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.TokenizationGrpcService.Tokenization/getMultiToken.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "D",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "getMultiClearValue",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.TokenizationGrpcService.Tokenization/getMultiClearValue.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "E",
+                "timeField": "event.dateTime"
+              },
+              {
+                "alias": "getNamespaceForPortfolioId",
+                "bucketAggs": [
+                  {
+                    "field": "event.dateTime",
+                    "id": "1",
+                    "settings": {
+                      "interval": "auto"
+                    },
+                    "type": "date_histogram"
+                  }
+                ],
+                "datasource": {
+                  "type": "grafana-opensearch-datasource",
+                  "uid": "UNEhkO34z"
+                },
+                "format": "table",
+                "hide": false,
+                "metrics": [
+                  {
+                    "field": "event.measurements.TokenizationGrpcService.Tokenization/getNamespaceForPortfolioId.timeTaken",
+                    "id": "1",
+                    "meta": {
+                      "avg": false,
+                      "max": true,
+                      "std_deviation_bounds_lower": false,
+                      "std_deviation_bounds_upper": false
+                    },
+                    "type": "extended_stats"
+                  }
+                ],
+                "query": "event.trackingNumber:*",
+                "queryType": "lucene",
+                "refId": "F",
+                "timeField": "event.dateTime"
+              }
+            ],
+            "title": "Tokenization calls responseTimes",
+            "type": "timeseries"
+          }
+        ],
+        "title": "Interaction with other microservices",
+        "type": "row"
+      }
+    ],
+    "refresh": false,
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "API_EVENT",
+            "value": "API_EVENT"
+          },
+          "datasource": {
+            "type": "grafana-opensearch-datasource",
+            "uid": "eVufkd3Vz"
+          },
+          "definition": "{\"find\": \"terms\", \"field\": \"event.type.keyword\"}",
+          "hide": 0,
+          "includeAll": false,
+          "multi": false,
+          "name": "apiType",
+          "options": [],
+          "query": "{\"find\": \"terms\", \"field\": \"event.type.keyword\"}",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "9ddc8d81-7168-4d0a-903e-5e0dec9ae856",
+            "value": "9ddc8d81-7168-4d0a-903e-5e0dec9ae856"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "label": "",
+          "multi": false,
+          "name": "trackingNumber",
+          "options": [],
+          "query": "",
+          "queryValue": "",
+          "skipUrlSync": false,
+          "type": "custom"
+        }
+      ]
+    },
+    "time": {
+      "from": "2023-07-01T04:00:00.000Z",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Service Interaction",
+    "uid": "R2V8usC4z",
+    "version": 23,
+    "weekStart": ""
+  }

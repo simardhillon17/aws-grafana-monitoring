@@ -1,0 +1,97 @@
+properties(
+  [
+    [
+      $class: 'ParametersDefinitionProperty',
+      parameterDefinitions:
+      [
+        [$class: 'StringParameterDefinition', name: 'Repo', defaultValue: 'https://git.git.example.com/scm/cdm/aws-grafana-observability.git', description: 'Enter Repo Git Location'],
+        [$class: 'StringParameterDefinition', name:'Branch', defaultValue: 'NP-4348', description: 'Enter Manifests Repo Main Branch' ],
+        [$class: 'ChoiceParameterDefinition', name:'GrafanaVersion', choices: ['8.5.10-debian-11-r3'], description: 'Grafana Release Version' ],
+        [$class: 'ChoiceParameterDefinition', name:'GrafanaOperatorVersion', choices: ['4.5.1-debian-11-r11'], description: 'Grafana Operator Release Version' ],
+        [$class: 'StringParameterDefinition', name:'DockerRepo', defaultValue: 'registry.example.com/awsdevops', description: 'Enter Docker Registry Repo to be pushed' ],
+        [$class: 'StringParameterDefinition', name:'DockerFileFolder', defaultValue: 'docker-images/grafana/8/debian-10', description: 'Enter Docker Registry Repo to be pushed' ],
+        [$class: 'ChoiceParameterDefinition', name:'helmVersion', choices: ['3.9.2'], description: 'Helm Release Version' ],
+        [$class: 'ChoiceParameterDefinition', name:'kubectlVersion', choices: ['1.22.12'], description: 'kubectl Release Version' ],
+        [$class: 'BooleanParameterDefinition', name: 'Refresh_Params', defaultValue: false, description: 'Select this option to refresh the build parameters updated in the pipeline script present in git. When selected, docker images will not be built.']
+      ]
+    ],
+    disableConcurrentBuilds()
+  ]
+)
+if (env.Refresh_Params && env.Refresh_Params == 'true') {
+	print 'Build Parameters refreshed!'
+	return
+}
+node ('example-synthetic-us-east-1') 
+{
+  ansiColor('xterm') 
+  {
+    deleteDir()
+    cleanWs()
+    
+    def DockerFileFolder = env.DockerFileFolder
+    def Repo = env.Repo
+    def GrafanaVersion = env.GrafanaVersion
+    def Docker_Image_Name="grafana:"+GrafanaVersion
+    def DOCKER_IMAGE = env.DockerRepo + '/' + Docker_Image_Name
+    def GRAFANA_OPERATOR_DOCKER_IMAGE = env.DockerRepo + "/grafana-operator:${env.GrafanaOperatorVersion}"
+    def container_name = env.BUILD_TAG.replaceAll("%2F","").replaceAll(" ","")
+
+
+    def FinalImagesList = [GRAFANA_OPERATOR_DOCKER_IMAGE] + [DOCKER_IMAGE]
+
+    //def FinalImagesList = [JAEGER_DOCKER_IMAGE]
+
+    def PROXY_URL = sh (returnStdout: true, script: "aws ssm get-parameter --name /examplefwk/init/squid_proxy_url --query '[Parameter.Value]' --output text  --with-decryption --region 'us-east-1'").trim()
+    print "PROXY_URL: " + PROXY_URL
+
+    def NO_PROXY = sh (returnStdout: true, script: "aws ssm get-parameter --name /application/tools/squid/no_proxy --query '[Parameter.Value]' --output text  --with-decryption --region 'us-east-1'").trim()
+    print "NO_PROXY: " + NO_PROXY
+
+    stage ('Checkout Source Code')
+    {
+        dir('repo')
+        {
+          git branch: env.Branch , changelog: false, credentialsId: 'jenkinsreadonly-new', poll: false, url: Repo
+        }
+    }
+
+    stage ('Docker Build & Scan')
+    {
+      try
+     {
+
+        for (ImageToScan in FinalImagesList) 
+        {
+            stage("Image Scan - ${ImageToScan}")
+            {
+              sh "docker pull ${ImageToScan}"
+
+              sh "rm -rf grafana-${GrafanaVersion}.json || true"
+
+              prismaCloudScanImage ca: '', cert: '', dockerAddress: 'unix:///var/run/docker.sock', image: ImageToScan, key: '', ignoreImageBuildTime: true, logLevel: 'info', podmanPath: '', project: '', resultsFile: "grafana-${GrafanaVersion}.json"
+
+              sh "cat grafana-${GrafanaVersion}.json"
+
+              prismaCloudPublish resultsFilePattern: "grafana-${GrafanaVersion}.json"
+
+              sh "rm -rf grafana-${GrafanaVersion}.json || true"
+
+              sh "docker rmi ${ImageToScan}"
+            }
+
+        }
+        deleteDir()
+        cleanWs()
+      }      
+      catch (all)
+      {
+        error all.toString()
+        currentBuild.result = 'FAILURE'
+        deleteDir()
+        cleanWs()
+      }
+
+    }
+  }
+}

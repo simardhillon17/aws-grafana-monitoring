@@ -1,0 +1,36 @@
+{
+	"jenkins_job": "SC-IRSA-IAM-PIPELINE",
+	"input": {
+		"RequestType": "Create",
+		"ServiceToken": "arn:aws:sns:us-east-1:111122223333:TOOLS-EXAMPLE-ENTERPRISE-jenkins-broker",
+		"ResponseURL": "https://cloudformation-custom-resource-response-useast1.s3.amazonaws.com/arn%3Aaws%3Acloudformation%3Aus-east-1%3A111122223333%3Astack/SC-111122223333-pp-izk43qgxacbo4/e1271340-0825-11ed-aa01-0e617d111be1%7CTerraformResource%7C01b3ff0e-f65e-4a4b-8401-381d3a93d347?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220720T121717Z&X-Amz-SignedHeaders=host&X-Amz-Expires=7200&X-Amz-Credential=AKIA6L7Q4OWTTE4NZIXU%2F20220720%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=1e34b5d438a5a2c94597c1dffd3b1155105c18e06190ecf82ff050d200e816d1",
+		"StackId": "arn:aws:cloudformation:us-east-1:111122223333:stack/SC-111122223333-pp-izk43qgxacbo4/e1271340-0825-11ed-aa01-0e617d111be1",
+		"RequestId": "01b3ff0e-f65e-4a4b-8401-381d3a93d347",
+		"LogicalResourceId": "TerraformResource",
+		"ResourceType": "Custom::TerraformPipeline",
+		"operation": "plan-only",
+		"account_name": "example-synthetic",
+		"tf_vars": {
+			"cluster_name": "cblb-syn-use1",
+			"productPath": "src/terraform",
+			"purpose": "cwaccess",
+			"oidc_fully_qualified_subjects": "system:serviceaccount:monitoring:cblb-syn-use1-grafana-grafana-operator,system:serviceaccount:monitoring:grafana-serviceaccount",
+			"product_name": "grafana",
+			"business_unit": "issuingdidev3",
+			"toolsProject": "cdm",
+			"toolsRepo": "aws-sc-tools",
+			"endpoint": "grafana-issuingdidev3.prime.dev.example.aws",
+			"logLevel": "INFO",
+			"account_name": "example-synthetic",
+			"productRepo": "aws-grafana-observability",
+			"region": "us-east-1",
+			"productProject": "cdm"
+		},
+		"prov_prod_name": "SC-111122223333-pp-izk43qgxacbo4",
+		"PhysicalResourceId": "TerraformResource",
+		"account_id": "111122223333",
+		"region": "us-east-1",
+		"jenkins_job": "SC-IRSA-IAM-PIPELINE"
+	},
+	"receiptHandle": "AQEBU2/OO48uEpIAyabeAIryAMCzl5q6vcshVGAI7dw4OtfCHADorzQ6d1x6H6ioASfabkLWGAhI+vVytsIfWI7mgMgM+S1Tj9K8ickCWfhHNDuORr8ySVpCiXMRV+33do5NKf1ZIOkQgtTQHEv07JO09PprNX0gA5PJIz+4tYtRPr8DiDQxFxq6qEOz4HF4MszaE+2n57dFYlSHr0rCsfO/TzcrGgTJUT0ZbVVvctKqhWZDPSRiF2uSLBTnbAQL0so1e83/JqQ/byWYq8Nkg1tY0MIbny8NYM0gRgoKCmgTyJPpuKXFzWuemrE1Bt7lZTw+58KHCHFTseEJziW75nvXuxu35dnTYBzUgAwd2eC7Lzy5/mGZnfz2O9A/DUr6Z1Kn0TZqVkBhrPu09tzR1VmNDG+Qs0r12ciw7s9zZa6NftE="
+}

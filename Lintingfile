@@ -1,0 +1,62 @@
+properties(
+  [
+    [
+      $class: 'ParametersDefinitionProperty',
+      parameterDefinitions:
+      [
+        [$class: 'StringParameterDefinition', name: 'Manifests_Repo', defaultValue: 'https://git.example.aws/scm/cdm/aws-grafana-observability.git', description: 'Enter Manifests Repo Git Location'],
+        [$class: 'StringParameterDefinition', name:'Manifests_Repo_Main_Branch', defaultValue: 'main', description: 'Enter Manifests Repo Main Branch' ],
+        [$class: 'StringParameterDefinition', name:'Linter_Branch', defaultValue: 'main', description: 'Enter Git branch for Linters' ],
+        [$class: 'BooleanParameterDefinition', name: 'run_on_all_manifests', defaultValue: true, description: 'Select this option to run validation on all manifests']
+      ]
+    ],
+    disableConcurrentBuilds()
+  ]
+)
+node ('example-synthetic-us-east-1') {
+  ansiColor('xterm') {
+    deleteDir()
+    cleanWs()
+    def DOCKER_REGISTRY = "docker.git.example.com"
+    def DOCKER_IMAGE = DOCKER_REGISTRY + '/reference:0.1.10-alpine'
+    def Manifests_Repo = env.Manifests_Repo
+    def git_branch_Main = env.Manifests_Repo_Main_Branch
+    def container_name = env.BUILD_TAG.replaceAll("%2F","")
+    def now = new Date()
+    def datetimestamp = now.format("yyyyMMdd.HHmmss",TimeZone.getTimeZone('UTC'))
+
+
+    print env.run_on_all_manifests
+    stage ('Checkout Source Code')
+    {
+            dir('_manifestrepo_'){
+              git branch: env.BRANCH_NAME , changelog: false, credentialsId: 'jenkinsreadonly-new', poll: false, url: env.Manifests_Repo
+            }
+            dir('_kubelinter_'){
+               git branch: env.Linter_Branch , changelog: false, credentialsId: 'jenkinsreadonly-new', poll: false, url: 'https://git.example.aws/scm/cdm/reference.git'
+            }
+    }
+
+    stage ('kubelinter Validation'){
+      try{
+
+            withCredentials([usernamePassword(credentialsId: 'dockerregistry', usernameVariable: 'dockerregistry_user', passwordVariable: 'dockerregistry_password'),string(credentialsId: 'VaultTokenI', variable: 'vaulttoken')]){
+                sh "docker login ${DOCKER_REGISTRY} -u ${dockerregistry_user} -p ${dockerregistry_password}"
+                sh "docker rm -f ${container_name} || true"
+                sh "docker pull ${DOCKER_IMAGE}"
+                sh "docker run -it -d --name ${container_name} --net=host --env git_branch_Main=${git_branch_Main} --env git_branch_UserCreated=${env.BRANCH_NAME} --env run_on_all_manifests=${env.run_on_all_manifests} ${DOCKER_IMAGE} /bin/sh"
+                sh "docker cp _manifestrepo_/src/. ${container_name}:/_manifestrepo_/"
+                sh "docker cp _kubelinter_/ ${container_name}:/_kubelinter_/"
+                sh "docker exec ${container_name} sh -c 'chmod u+x _kubelinter_/src/kubelinter/scripts/shell/linter.sh && _kubelinter_/src/kubelinter/scripts/shell/linter.sh'"
+          }
+      }
+
+      catch (all){
+        error all.toString()
+      }
+      finally{
+        sh "docker rm -f ${container_name} || true"
+       }
+    }
+  }
+}
